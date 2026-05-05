@@ -1,2 +1,11 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
+
+@font-face {
+  font-family: "Andasia";
+  src: url("./assets/fonts/Andasia.ttf");
+}
+
+html {
+  scroll-behavior: smooth;
+}

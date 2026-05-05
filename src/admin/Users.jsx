@@ -7,8 +7,6 @@ const Users = ({setTheme}) => {
   const [role, setRole] =  useState('');
   const [loading, setLoading] = useState(false);
 
-
-
   // Close Outside
   const popupRef = useRef(null);
   useEffect (() => {

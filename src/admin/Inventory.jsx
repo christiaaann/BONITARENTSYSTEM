@@ -2,7 +2,8 @@ import {useState, useEffect} from 'react'
 import axios from 'axios'
 import ApparelToolbar from '../components/ApparelToolbar'
 import sampleimage from '../assets/test.png'
-import CategoryRadio from '../components/CategoryRadio'
+import CategoryRadio from '../components/ui/CategoryRadio'
+import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 const  Inventory = () => { 
    // cloudinary
    const [previewImage, setPreviewImage] = useState("");
@@ -10,7 +11,12 @@ const  Inventory = () => {
    const [imageFile, setImageFile] = useState(null);
    const [originalImage, setOriginalImage] = useState(null);
    const [removedBgImage, setRemovedBgImage] = useState(null);
-
+   
+  //  loading RemoverBackground
+  const [loading, setLoading] = useState(false);
+  // ModalEnhancer  
+  const [modalEnhance, setModalEnchance] = useState(false);
+  
   // select image
   const handleSelectImage = async (img) => {
   setSelectImages(img); // display
@@ -45,7 +51,7 @@ const handleFileChange = (e) => {
   setPreviewImage(preview); //display
   // setSelectImages(preview) // AUTO SELECT
   setImageFile(file);
-
+  setSelectImages(null);
   setForm({ ...form, image: file });
 };
 
@@ -153,6 +159,7 @@ const [modalCategories, setmodalCategories] = useState(false);
 
 const handleRemoveBg = async () => {
   try {
+    setLoading(true);
     const formData = new FormData();
     formData.append("image", imageFile);
     
@@ -172,6 +179,8 @@ const handleRemoveBg = async () => {
     alert("Background removed (preview only). Click Upload to save!");
   } catch (err) {
     console.error(err);
+  }finally{
+   setLoading(false); 
   }
 };  
 
@@ -212,7 +221,7 @@ useEffect(() => {
      <div className='flex w-full gap-10'>   
      
      <div class="w-300 h-120 overflow-hidden mt-5 border-2 border-dashed border-gray-200 rounded-xl">
-      <div className='bg-gray-50 flex items-center justify-center text-gray-400 h-120'>
+    <div className='bg-gray-50 flex items-center justify-center text-gray-400 h-120'>
 
     {selectImage ? ( 
      <img src={selectImage} 
@@ -226,11 +235,57 @@ useEffect(() => {
      </div>
      
      <div className='shadow w-200 overflow-hidden rounded-xl h-130'>
-     <div className='h-100 bg-gray-50'>
-     
-     {previewImage && (
-     <img src={previewImage} class="w-full h-100 object-cover" />
-     )} 
+     <div className='h-100 relative flex justify-end bg-gray-50'>
+      
+      {/* Modal Enhance  */}
+    <button
+      onClick={() => {
+        if (loading) return;
+        setModalEnchance(true);
+      }}
+      className={`absolute top-2 bg-gray-50 px-6 py-2 shadow ${
+        loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+      }`}
+      disabled={loading}
+    >
+      Enhance?
+    </button>
+
+      {modalEnhance && (
+       <div className='fixed z-10  inset-0 flex items-center justify-center'>
+        <div className='bg-white relative flex flex-col gap-2 items-center w-[20rem] shadow p-3 rounded'>
+         <button
+          className='absolute cursor-pointer -top-3 -right-3 bg-red-500 w-8 h-8 rounded-full text-white'
+          onClick={() =>
+          setModalEnchance(false)
+          }>
+          X
+          </button>
+
+         <button className='bg-gray-100 w-full py-2 rounded-full'>Remove Background</button>
+         <button className='bg-gray-100 w-full rounded-full py-2'>AI Generate Background</button>
+        </div>
+       </div> 
+      )}
+    
+    {/* laoding with animation */}
+    {loading ? (
+      <div className="flex w-full justify-center items-center">
+        <DotLottieReact
+          src="https://lottie.host/4d3db2ba-0504-4ea0-b045-0903895872a6/zD69dN0v3b.lottie"
+          loop
+          autoplay
+          style={{ width: 150, height: 150 }}
+        />
+      </div>
+    ) : previewImage ? (
+      <img 
+        src={previewImage} 
+        className="w-full h-full object-scale-down"
+      />
+    ) : (
+      <h1>No image</h1>
+    )}
       </div>
       <div className='p-2 relative'>
       <h1>AI Suggestions Background</h1>
