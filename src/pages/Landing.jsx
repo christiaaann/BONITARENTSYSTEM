@@ -8,13 +8,51 @@ import googleicon from '../assets/google.png'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'
 const Landing = () => {
+  
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [preview, setPreview] = useState(null);
   const [products, setProducts] = useState([]);
-   
+  
+  const [address, setAddress] = useState("");
+  const [contact, setContact] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const handleCompleteProfile = async () => {
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("http://localhost:3000/api/complete-profile", {
+        method: "POST",
+        credentials: "include", 
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          address,
+          contact,
+        }),
+      });
+
+   if (res.ok) {
+      const data = await res.json();
+      console.log("Success:", data);
+
+      setTimeout(() => {
+        setmodalGoogleAccount(false);
+        window.location.assign("/"); 
+      }, 2000); 
+
+    } else {
+      setIsSubmitting(false); 
+      alert("May error sa pag-save.");
+    }
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
   // fethusers
   // const [user, setUser] = useState(null);
-  const { user } = useAuth();
+
 //   useEffect(() => {
 //   const token = localStorage.getItem("token");
 
@@ -39,7 +77,7 @@ const Landing = () => {
   if (user) {
     if (user.role === "admin") return;
     //  check kung kulang profile
-    if (!user.address || !user.phone) {
+    if (!user.address || !user.contact) {
       setStep("complete");
       setmodalGoogleAccount(true);
     } else {
@@ -87,7 +125,8 @@ const Landing = () => {
   
 useEffect(() => {
   const socket = io("http://localhost:3000", {
-    transports: ["websocket", "polling"]
+    withCredentials: true,
+    transports: ["polling", "websocket"]
   });
   
   // productAdded
@@ -180,7 +219,12 @@ useEffect(() => {
           <h1 className="text-3xl font-serif text-white">
             BONITA
           </h1>
-           <img className='rounded-full absolute -bottom-5 left-10 border-4 border-white' src={user?.picture} alt="" />  
+           <img 
+             className='rounded-full absolute -bottom-5 left-10 border-4 border-white' 
+              referrerPolicy='no-referrer'
+              src={user?.picture} 
+              alt="" 
+          />  
           </div>
           <div className='h-full w-full pl-2'>
           <div className='flex justify-between'>
@@ -202,19 +246,35 @@ useEffect(() => {
           <input
             type="text"
             placeholder="Address"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
             className="border border-gray-400 bg-amber-900/5 border-dashed w-full p-2 rounded-lg"
           />
 
           <input
             type="text"
+            value={contact}
             placeholder="Contact Number"
+            onChange={(e) => setContact(e.target.value)}
             className="border border-gray-400 bg-amber-900/5 border-dashed w-full p-2 rounded-lg"
           />
                  
-        <button 
-           className="bg-amber-900 w-full text-white px-6 py-3 rounded-full"
+        <button
+           disabled={isSubmitting}
+           onClick={handleCompleteProfile} 
+           className="cursor-pointer bg-amber-900 w-full text-white px-6 py-3 rounded-full"
           >
-           Continue
+         {isSubmitting ? (
+    <>
+    <div className='flex justify-center items-center gap-2'>
+    <div className="w-5 h-5 border-2  border-white/30 border-t-white rounded-full animate-spin"></div>
+      <span>Saving..</span>
+    </div>
+
+    </>
+  ) : (
+    "Continue"
+  )}
         </button>      
           </div>
    

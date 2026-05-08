@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import { useEffect, useRef } from 'react';
 import { ChartNoAxesCombined, ChevronUp, Database, Mail, Moon, Pencil, Sun, Trash } from 'lucide-react';
+import { useUsers } from '../context/UserContext';
 const Users = ({setTheme}) => {
+  const { users, deleteUser } = useUsers();
+
   const [name, setName] =  useState('');
   const [email, setEmail] = useState('');
   const [role, setRole] =  useState('');
@@ -39,77 +42,47 @@ const Users = ({setTheme}) => {
   setRole(user.role);
   setEdited(user.id);
   }
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // validation
-    if (!name || !email || !role) {
-      alert('Name email and role  are required');
-      return; 
-    }
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   // validation
+  //   if (!name || !email || !role) {
+  //     alert('Name email and role  are required');
+  //     return; 
+  //   }
 
-    setLoading(true);
+  //   setLoading(true);
 
-    try {
-      const url  = edit 
-      ? `http://localhost:3000/api/users/${edit}`
-      : `http://localhost:3000/api/users`;  
+  //   try {
+  //     const url  = edit 
+  //     ? `http://localhost:3000/api/users/${edit}`
+  //     : `http://localhost:3000/api/users`;  
 
-      const method  = edit ? 'PUT' : 'POST';
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, role }),
-      });
+  //     const method  = edit ? 'PUT' : 'POST';
+  //     const response = await fetch(url, {
+  //       method,
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ name, email, role }),
+  //     });
 
-      alert('User added successfully!');
-      const data = await response.json();
-      console.log(data);
-      // clear inputs
-      setName('');
-      setEmail('');
-      setRole('');
-      setEdited(null);
-      // get users no refresh
-      fetchUsers();
-    } catch (error) {
-      console.error('Error adding user:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     alert('User added successfully!');
+  //     const data = await response.json();
+  //     console.log(data);
+  //     // clear inputs
+  //     setName('');
+  //     setEmail('');
+  //     setRole('');
+  //     setEdited(null);
+  //     // get users no refresh
+  //     fetchUsers();
+  //   } catch (error) {
+  //     console.error('Error adding user:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  // Get users
-  const [users, setUsers] = useState([]);
-  useEffect(() => { 
-    fetchUsers();
-  },[]);
-  
-  const fetchUsers = async () => {
-    try{
-      const res = await fetch('http://localhost:3000/api/users');
-      const data = await res.json();
-      setUsers(data);
-    }catch (error) {
-      console.error('Error fetching users:', error);
-    }
-  };
-
-  // Delete
-  const handleDelete = async (id) => {
-    const confirmDelte = confirm('Are you sure you want to Delete?');
-    if (!confirmDelte) return;
-    try{
-      await fetch(`http://localhost:3000/api/users/${id}`, {
-      method: 'DELETE',
-      });
-      alert('User Deleted');
-      fetchUsers();
-    }catch (error){
-      console.error('Error deleteting user', error);
-    }
-  }
 
   return (
     <>
@@ -210,7 +183,14 @@ const Users = ({setTheme}) => {
               <td className="p-5 bg-blue-50/65 group-hover:bg-blue-100 dark:group-hover:bg-blue-400/5 group-dark:bg-white/5 transition">{user.role}</td>
               <td className='flex gap-2 justify-center' >
               <Pencil color='green' strokeWidth={1}/>
-              <Trash color='red' strokeWidth={1}/>
+             <button 
+                className=' cursor-pointer'
+                onClick={() => deleteUser(user.id)}
+                >
+                <Trash color='red' strokeWidth={1}
+                />
+            </button>
+             
               </td>
             </tr>
           ))}

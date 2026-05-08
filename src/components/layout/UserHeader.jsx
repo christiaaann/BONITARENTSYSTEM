@@ -1,13 +1,12 @@
 import React, {useState, useEffect} from 'react'
 import { motion } from "framer-motion";
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Heart } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 const UserHeader = () => {
   const [scrolled, setScrolled] = useState(false);
   const [profilemodal, setprofileModal] = useState(false); 
-  
+  const [showLogoutConfirm, setLogoutConfirm] = useState(false);
   const {user, loading} = useAuth();
-  
   const {logout} = useAuth();
   const handleLogout = () => {
   setprofileModal(false);
@@ -34,7 +33,8 @@ const UserHeader = () => {
   }, []);
 
   return (
- <header className={`fixed top-0 p-3 w-full z-50 flex items-center justify-between  transition-all duration-300 ${
+    <>
+    <header className={`fixed top-0 p-3 w-full z-50 flex items-center justify-between  transition-all duration-300 ${
   scrolled ? " bg-amber-900/20 backdrop-blur-sm text-white" : "bg-transparent text-white/50"
 }`}>
   
@@ -67,20 +67,15 @@ const UserHeader = () => {
 </motion.a>
   </nav>
 
-  {/* RIGHT (para balance lang) */}
-    {/* <img
-  src={user?.picture}
-  alt="user"
-  className="w-8 h-8 rounded-full object-cover"
-  referrerPolicy="no-referrer"
-/> */}
- {user && user.email ? (
+
+{user && user.email && user.address && user.contact ? (
   <div className='flex gap-2 items-center relative'>
     <img 
-    className='w-9 h-9 rounded-full' 
-    src={user?.picture} 
-    referrerPolicy="no-referrer" 
-    alt="" />
+      className='w-9 h-9 rounded-full' 
+      src={user?.picture} 
+      referrerPolicy="no-referrer" 
+      alt="" 
+    />
 
     <button
       onClick={() => setprofileModal(prev => !prev)}
@@ -91,8 +86,7 @@ const UserHeader = () => {
 
     {profilemodal && (
       <div className='absolute p-5 bg-white w-80 h-80 right-1 top-10 rounded-lg shadow'>
-        
-        <h1 className='text-gray-400 text-sm font-serif'>Currently in</h1>
+        <h1 className='text-gray-400 text-sm px-2'>Currently in</h1>
 
         <div className='flex items-center mt-3 gap-3'>
           <img
@@ -111,24 +105,59 @@ const UserHeader = () => {
             </p>
           </div>
         </div>
-
-        <div className='flex justify-center h-48 items-end'>
+        
+        <div className='flex flex-col mt-10'>
+          <h1 className='text-gray-400 text-sm px-2'>Your Account</h1>
+          <button 
+            className='flex items-center gap-2 text-black text-xl font-serif px-2 hover:bg-gray-50 w-full rounded-lg py-2'
+          >
+            Wishlist
+            <Heart/>
+          </button>                                                
+   
           <button
-            onClick={handleLogout}
-            className='cursor-pointer text-black py-2 shadow w-full rounded-full bg-gray-100'
+            onClick={() => {
+              setLogoutConfirm(true);
+              setprofileModal(false);
+            }}
+            className='flex px-2 font-serif text-xl cursor-pointer text-black py-2 w-full rounded-lg hover:bg-gray-50'
           >
             Logout
           </button>
         </div>
-
       </div>
     )}
-    
   </div>
- ): (
- <div className='w-10'></div> 
- )}
+) : (
+  <div className='w-10'></div> 
+)}
 </header>
+{showLogoutConfirm && (
+  <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div className="bg-white p-8 rounded-2xl shadow-2xl w-[90%] max-w-md text-center">
+      <h2 className="text-2xl font-serif mb-4 text-black">Logout?</h2>
+      <p className="text-gray-600 mb-6">Are you sure you want to Logout?</p>
+      
+      <div className="flex gap-4 justify-center">
+        <button 
+          onClick={() => setLogoutConfirm(false)}
+          className="px-6 py-2 rounded-full border border-gray-300 border-dashed text-gray-700 hover:bg-gray-50"
+        >
+          Cancel
+        </button>
+        <button 
+          onClick={handleLogout}
+          className="px-6 cursor-pointer py-2 rounded-full bg-amber-900 text-white"
+        >
+          Confirm Logout
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+  
+    </>
+ 
   )
 }
 

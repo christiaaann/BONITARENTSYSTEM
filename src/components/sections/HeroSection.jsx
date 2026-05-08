@@ -9,21 +9,21 @@ const HeroSection = () => {
     const [current, setCurrent] = useState(0);
     
     // fetchusers
-      const [user, setUser] = useState(null);
-      useEffect(() => {
-      const token = localStorage.getItem("token");
+    //   const [user, setUser] = useState(null);
+    //   useEffect(() => {
+    //   const token = localStorage.getItem("token");
     
-      fetch("http://localhost:3000/api/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          // console.log(data.name); 
-          setUser(data);
-        });
-    }, []);
+    //   fetch("http://localhost:3000/api/me", {
+    //     headers: {
+    //       Authorization: `Bearer ${token}`,
+    //     },
+    //   })
+    //     .then((res) => res.json())
+    //     .then((data) => {
+    //       // console.log(data.name); 
+    //       setUser(data);
+    //     });
+    // }, []);
 
 
     useEffect(()=> {
@@ -36,8 +36,6 @@ const HeroSection = () => {
     <section className='h-250 relative overflow-hidden'>
    
       <UserHeader 
-        user={user} 
-        setUser={setUser}
       />
 
     {images.map((img, index) => (
