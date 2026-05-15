@@ -4,6 +4,7 @@ import AdminLayout from '../layout/AdminLayout'
 import Users from '../admin/Users'
 import Dashboard from '../admin/Dashboard'
 import Inventory from '../admin/Inventory'
+import Trash from '../admin/Trash'
 const AdminRoutes = () => {
    const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'light';
@@ -23,6 +24,7 @@ const AdminRoutes = () => {
      <Route path='dashboard' element={<Dashboard/>}/>   
      <Route path='users' element={<Users setTheme={setTheme}/>}/>
      <Route path='inventory' element={<Inventory/>}/>
+     <Route path='trash' element={<Trash/>}/>
     </Route>
   )
 }

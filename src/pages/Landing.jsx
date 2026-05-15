@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 import UserHeader from '../components/layout/UserHeader';
 import HeroSection from '../components/sections/HeroSection';
 import { motion, AnimatePresence } from "framer-motion";
-import { Maximize2 } from 'lucide-react';
+import { Heart, Maximize2 } from 'lucide-react';
 import googleicon from '../assets/google.png'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'
@@ -146,11 +146,24 @@ useEffect(() => {
   return [newCategory, ...prev];
     });  
   });
+   
+  // category deketed
+  socket.on("categoryAdded", (categoryID) => {
+  setCategories(prev => {
+  const exists = prev.some(p => p.id === categoryID.id);
+  if (exists) return prev;
+  return [categoryID, ...prev];
+    });  
+  });
+
   return () => socket.disconnect();
 }, []);
 
+
+
 const [categories, setCategories] = useState([]);
 const [selectedCategory, setSelectedCategory] = useState("");
+
 const fetchCategories = async () => {
   const res = await fetch("http://localhost:3000/api/categories");
   const data = await res.json();
@@ -290,7 +303,7 @@ useEffect(() => {
     <div className='min-h-screen p-10 flex flex-col'>
 
     <div className="flex gap-3 flex-wrap items-center">
-      <h1 className='text-2xl font-serif text-gray-500'>Categories</h1>
+      <h1 className='text-lg font-serif text-gray-500'>Categories</h1>
 
       {/* All */}
       <button
@@ -340,7 +353,7 @@ useEffect(() => {
     </div>
 
 <div className='flex p-2'>
-<div className='w-48'></div>
+{/* <div className='w-48 border'></div> */}
 <motion.div className='grid gap-3 w-full grid-cols-5'>
 <AnimatePresence>
   {products
@@ -369,7 +382,7 @@ useEffect(() => {
     <div className="h-110 w-full overflow-hidden flex items-center justify-center">
       <img
         src={item.image}
-        className="rounded-lg w-full h-full object-center"
+        className="rounded-lg h-full w-full object-fill"
       />
       <button
        className=' cursor-pointer absolute left-5 flex items-center justify-center top-5 bg-black/20 w-8 h-8 rounded-full'
@@ -379,7 +392,7 @@ useEffect(() => {
       </button>
 
     {preview && (
-        <div className="fixed bg-black inset-0 flex items-center justify-center z-50">
+    <div className="fixed bg-black inset-0 flex items-center justify-center z-50">
     
     <img
       src={preview}
@@ -398,15 +411,46 @@ useEffect(() => {
     </div>
 
     {/* TEXT */}
-    <div className="p-3 bg-gray-50 rounded-b-xl flex flex-col gap-1">
-      <h3 className="font-semibold text-sm">
+    <div className="p-3 bg-gray-50 relative rounded-b-xl flex flex-col gap-1">
+      <div className='flex gap-2'>
+      <h3 className="font-semibold text-sm text-nowrap">
         {item.name}
       </h3>
+       {item.discount > 0 && (
+    <p className=' bg-amber-900/10 px-2 rounded-full text-sm border border-dashed text-nowrap'>
+       SAVE ₱{Number(item.discount)}
+    </p>
+      )}
+      </div>
+ 
+      <div>
+      {item.discount > 0 ? (
+        <div className='flex gap-2'>
+        <span className='line-through text-gray-500'>
+         ₱{item.price}
+         </span>
+         <span className='text-green-600 font-semibold'>
+          ₱{item.final_price}
+         </span>
+        </div>
+      ):(
+      <span className='text-green-600 font-semibold'>₱{item.final_price}</span>
+      )}
+      </div>
 
-      <p className="text-amber-900 font-bold">
-        ₱{item.price}
-      </p>
 
+      
+     
+     {/* wishlist */}
+     <button
+      className=' absolute right-4 top-3'
+     >
+     <Heart/>
+    </button>
+     <div className='flex items-center justify-between'>
+     <p>Size:</p> 
+    <button className='bg-amber-900/50 shadow  text-white px-5 rounded-full py-1 font-serif'>Rent Now?</button>
+    </div>
     </div>
 
   </div>

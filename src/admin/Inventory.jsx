@@ -4,18 +4,20 @@ import ApparelToolbar from '../components/ApparelToolbar'
 import sampleimage from '../assets/test.png'
 import CategoryRadio from '../components/ui/CategoryRadio'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react'
+import { Pencil, Trash2 } from 'lucide-react'
 const  Inventory = () => { 
    // cloudinary
-   const [previewImage, setPreviewImage] = useState("");
+   const [previewImage, setPreviewImage] = useState(null);
    const [selectImage, setSelectImages] = useState(null);
    const [imageFile, setImageFile] = useState(null);
    const [originalImage, setOriginalImage] = useState(null);
    const [removedBgImage, setRemovedBgImage] = useState(null);
-   
-  //  loading RemoverBackground
-  const [loading, setLoading] = useState(false);
-  // ModalEnhancer  
-  const [modalEnhance, setModalEnchance] = useState(false);
+
+   const [editId, setEditId] = useState(null);
+    //  loading RemoverBackground
+   const [loading, setLoading] = useState(false);
+    // ModalEnhancer  
+   const [modalEnhance, setModalEnchance] = useState(false);
   
   // select image
   const handleSelectImage = async (img) => {
@@ -30,9 +32,12 @@ const  Inventory = () => {
 }; 
 
    const [inventory, setInventory] = useState(false);
+   
    const [form, setForm] = useState({
     name: "",
     price: "",
+    discount: "",
+    final_price: "",
     stock: "",
     image: "",
     category_id: ""
@@ -52,44 +57,106 @@ const handleFileChange = (e) => {
   // setSelectImages(preview) // AUTO SELECT
   setImageFile(file);
   setSelectImages(null);
-  setForm({ ...form, image: file });
+  // setForm({ ...form, image: file });
 };
+
+// submit product
 
 
 const handleSubmit = async (e) => {
   e.preventDefault();
 
-  if (!form.name || !form.price || !form.stock || !form.image) {
+  if (!form.name || !form.price || !form.stock) {
     alert('Required all');
     return;
   }
 
   const formData = new FormData();
-  formData.append("name",  form.name);
+
+  formData.append("name", form.name);
   formData.append("price", form.price);
+  formData.append("discount", form.discount || 0);
+  formData.append("final_price", discountedPrice);
   formData.append("stock", form.stock);
-  formData.append("image", form.image);
+
+  // image optional sa edit
+  if (form.image instanceof File) {
+    formData.append("image", form.image);
+  }
+
   formData.append("category_id", form.category_id);
 
   try {
-    const res = await axios.post(
-      "http://localhost:3000/api/apparel",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        }
-      }
-    );
 
-    console.log(res.data);
-    alert("Product added!");
+    // EDIT
+    if (editId) {
+
+      const res = await axios.put(
+        `http://localhost:3000/api/apparel/${editId}/edit`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        }
+      );
+
+      console.log(res.data);
+
+      alert("Product updated!");
+
+      setEditId(null);
+
+    } else {
+
+      // ADD
+      const res = await axios.post(
+        "http://localhost:3000/api/apparel",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        }
+      );
+
+      console.log(res.data);
+
+      alert("Product added!");
+    }
+
     fetchProducts();
+
   } catch (err) {
     console.log(err);
-    alert("Error adding product");
+    alert("Error saving product");
   }
 };
+
+// edit product
+const handleEdit = (item) => {
+  setEditId(item.id);
+  setInventory(true);
+  setPreviewImage(item.image);
+  setOriginalImage(item.image);
+  setSelectImages(item.image);
+  setForm({
+    name: item.name,
+    price: item.price,
+    discount: item.discount,
+    final_price: item.final_price,
+    stock: item.stock,
+    image: item.image,
+    category_id: item.category_id
+  });
+};
+
+
+// discount prices
+const price = Number(form.price) || 0;
+const discount = Number(form.discount) || 0;
+
+const discountedPrice = Math.round(price - discount);
 
 // fetc Products
   const [products, setProducts] = useState([]);
@@ -108,6 +175,7 @@ const handleSubmit = async (e) => {
   // categories
   const [categories, setCategories] = useState([]);
   const [categoryName, setCategoryName] = useState("");
+ 
   const addCategory = async () => {
   if (!categoryName) return alert("Enter category");
 
@@ -121,12 +189,15 @@ const handleSubmit = async (e) => {
 
     setCategoryName("");
     fetchCategories();
+    setmodalCategories(false);
   } catch (err) {
     console.log(err);
-    alert("Error adding category");
+    alert("Category Already Exits");
   }
 };
-  const fetchCategories = async () => {
+ 
+
+const fetchCategories = async () => {
   try {
     const res = await fetch("http://localhost:3000/api/categories");
     const data = await res.json();
@@ -160,8 +231,18 @@ const [modalCategories, setmodalCategories] = useState(false);
 const handleRemoveBg = async () => {
   try {
     setLoading(true);
+
+    let fileToSend = imageFile;
+
+    // 🔥 if edit mode or walang bagong upload → convert existing image
+    if (!fileToSend && originalImage) {
+      const resFile = await fetch(originalImage);
+      const blob = await resFile.blob();
+      fileToSend = new File([blob], "edit-image.png", { type: blob.type });
+    }
+
     const formData = new FormData();
-    formData.append("image", imageFile);
+    formData.append("image", fileToSend);
     
     const res = await axios.post("http://localhost:3000/api/removebg", formData);
     
@@ -169,6 +250,7 @@ const handleRemoveBg = async () => {
     setPreviewImage(base64Url); 
     setRemovedBgImage(base64Url);
     
+    handleSelectImage(base64Url);
     const response = await fetch(base64Url);
     const blob = await response.blob();
     const file = new File([blob], "removed_bg.png", { type: "image/png" });
@@ -183,6 +265,26 @@ const handleRemoveBg = async () => {
    setLoading(false); 
   }
 };  
+
+
+// delete item
+const deleteProduct = async (id) => {
+  const confirmDelete = confirm("Are you sure you want to Delete?");
+  if(!confirmDelete) return;
+
+  try {
+    await fetch(`http://localhost:3000/api/apparel/${id}/delete`, {
+      method: 'DELETE'
+    });
+
+    alert('Deleted');
+    fetchProducts();
+
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 
 const [usage, setUsage] = useState(null);
 useEffect(() => {
@@ -213,11 +315,28 @@ useEffect(() => {
      {inventory && ( 
       <div className='fixed overflow-x-auto h-screen bg-white w-400 shadow mx-auto p-5 inset-0 flex flex-col'>
       <h1 className='text-2xl'>Create Item</h1>   
-          <button onClick={() => setInventory(false)} 
-     className=' absolute right-2 top-1 bg-gray-100 h-10 w-10 rounded-full hover:bg-red-600 hover:text-white shadow'>
-      X
+      <button 
+        onClick={() => {
+        setInventory(false);
+        setSelected(null);
+        setPreviewImage(null);
+        setSelectImages(null);
+        setEditId(null);
+        setOriginalImage(null);
+        setForm({
+        name: "",
+        price: "",
+        discount: "",
+        final_price: "",
+        stock: "",
+        image: "",
+        category_id: ""
+       });
+      }} 
+        className=' absolute right-2 top-1 bg-gray-100 h-10 w-10 rounded-full hover:bg-red-600 hover:text-white shadow'>
+        X
       </button>
-        {/*image viewing  */}
+    {/*image viewing  */}
      <div className='flex w-full gap-10'>   
      
      <div class="w-300 h-120 overflow-hidden mt-5 border-2 border-dashed border-gray-200 rounded-xl">
@@ -361,7 +480,12 @@ useEffect(() => {
       value={categoryName}
       onChange={(e) => setCategoryName(e.target.value)}
       />
-      <button className='bg-gray-200 rounded-xl py-1' type="button" onClick={addCategory}>Add</button>
+        <button 
+           className='bg-gray-200 rounded-xl py-1' 
+           type="button" 
+           onClick={addCategory}>
+           Add
+        </button>
     </div>
   </div>
   </div>
@@ -370,6 +494,7 @@ useEffect(() => {
       <CategoryRadio
       categories={categories}
       selected={selected}
+      fetchCategories={fetchCategories}
       handleSelect={handleSelect}
       />
 
@@ -381,6 +506,15 @@ useEffect(() => {
           type="text"
           name="name"
           placeholder="e.g Long Gown"
+          value={form.name}
+          onChange={handleChange}
+        />
+        <input
+          className='border w-full outline-none border-gray-200 px-5 py-2 rounded-lg'
+          type="number"
+          name="discount"
+          placeholder="Optional Discount"
+          value={form.discount}
           onChange={handleChange}
         />
 
@@ -389,14 +523,20 @@ useEffect(() => {
           type="number"
           name="price"
           placeholder="Price"
+          value={form.price}
           onChange={handleChange}
         />
         </div>
+
+        <p>
+           Final Price{discountedPrice || form.price}
+       </p>
 
         <input
           type="number"
           name="stock"
           placeholder="Stock"
+          value={form.stock}
           onChange={handleChange}
         />
 
@@ -411,30 +551,36 @@ useEffect(() => {
         onChange={handleFileChange}
       />
 
-{previewImage && (
-  <div className="mt-3">
-    <img src={previewImage} className="w-40 border" />
+      {previewImage && (
+        <div className="mt-3">
+          <img src={previewImage} className="w-40 border" />
 
-   <button
-  type="button"
-  onClick={handleRemoveBg}
->
-  Remove Background
-</button>
-  </div>
-)}
+        <button
+        type="button"
+        onClick={handleRemoveBg}
+      >
+        Remove Background
+      </button>
+        </div>
+      )}
 
-{usage && (
-  <p className="text-sm text-gray-500">
-    {usage.used} / {usage.limit} Free Previews Used
-  </p>
-)}
+      {usage && (
+        <p className="text-sm text-gray-500">
+          {usage.used} / {usage.limit} Free Previews Used
+        </p>
+      )}
+
     <button
-     type="submit"
-     disabled={!selectImage}
-     className={`${!selectImage ? 'opacity-50 cursor-not-allowed' : '' }`}
-     >
-     Upload
+      type="submit"
+      disabled={!selectImage && !editId}
+      className={`
+        ${!selectImage && !editId
+          ? 'opacity-50 cursor-not-allowed'
+          : ''
+        }
+      `}
+    >
+      {editId ? 'Update Product' : 'Upload Product'}
     </button>
       </form>
       
@@ -446,13 +592,14 @@ useEffect(() => {
      <table className='w-full'>
      <thead>
       <tr className='text-gray-500  border-b border-gray-300'>
-        <th></th>
+        {/* <th></th> */}
         <th>ID</th>
         <th className='w-5'>Image</th>
         <th className='w-28'>Products</th> 
         <th>Price</th>
         <th>Available</th>
         <th>CreatedAt</th>
+        <th>Categories</th>
         <th>Action</th>
       </tr>
       </thead> 
@@ -463,19 +610,36 @@ useEffect(() => {
       <tr key={item.id} className=' text-center border-b border-gray-300'>
         
         {/*delelete checkbox  */}
-         <td>
+         {/* <td>
         <input
          type="checkbox"
          name="" 
          id=""
           />
-</td>    
+       </td> */}
+           
        <td>{item.id}</td>
        <td>{item.image && (
       <img className='w-20 mx-auto' src={item.image} alt="" />
        )}</td>
        <td className=' text-nowrap'>{item.name}</td>
-       <td>₱{item.price}</td>
+       
+       {/* prices */}
+      <td>
+      {item.discount > 0 ? (
+        <div className='flex gap-2 justify-center'>
+        <span className='line-through text-gray-500'>
+         ₱{item.price}
+         </span>
+         <span className='text-green-600 font-semibold'>
+          ₱{item.final_price}
+         </span>
+        </div>
+      ):(
+      <span className='text-green-600 font-semibold'>₱{item.final_price}</span>
+      )}
+      </td>
+       
        <td>{item.stock}</td>
      <td>
      {new Date(item.created_at).toLocaleString("en-US", {
@@ -486,6 +650,34 @@ useEffect(() => {
       minute: "2-digit",
       hour12: true
       })}
+      </td>
+      <td>
+       {item.category_name} 
+      </td>
+     
+      <td className='flex gap-2 justify-center items-center h-21 '>
+      <button
+      className=' cursor-pointer'
+        onClick={() => {
+        setForm(item);
+        setEditId(item.id);
+        setSelected(item.category_id);
+        setPreviewImage(item.image);
+        setSelectImages(item.image);
+        setOriginalImage(item.image);
+        setInventory(true);
+      }}
+    >
+      <Pencil strokeWidth={1} />
+    </button>
+      
+      <button
+       className=' cursor-pointer'
+        onClick={() =>deleteProduct(item.id)}
+       >
+       <Trash2 color='red' strokeWidth={1}/> 
+     </button>
+     
       </td>
       </tr> 
       ))}

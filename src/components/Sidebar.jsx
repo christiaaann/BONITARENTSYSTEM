@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import { ChevronUp, House, LogOut, Motorbike, Settings, ShelvingUnit, SquareChevronLeft, UserPen, UserRound } from 'lucide-react'
+import { ChevronUp, House, LogOut, Motorbike, Settings, ShelvingUnit, Shirt, SquareChevronLeft, Trash2, UserPen, UserRound } from 'lucide-react'
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 const Sidebar = () => {
    const [isCollapsed, setIsCollapsed] = useState(false);
    const [openMenu, setOpenMenu] = useState(false);
    const {user} = useAuth();
-   const {logout} = useAuth(); 
+   const {logout, showLogoutConfirm, setLogoutConfirm,} = useAuth(); 
    const adminLogout = () => {
    logout();
    window.location.href = "/"
@@ -69,7 +69,7 @@ const Sidebar = () => {
         ${openMenu || isCollapsed ? "max-h-40 opacity-100 mt-1" : "max-h-0 opacity-0"}`}
         >
         <button 
-          className= {` group flex text-left px-3 py-2 hover:bg-gray-100 rounded-xl dark:hover:bg-blue-400/5 
+          className= {` group flex text-left px-3 py-2 hover:bg-gray-100 rounded-lg dark:hover:bg-blue-400/5 
           ${isCollapsed ? 'w-full flex items-center justify-center' : 'w-36'}`
           }>
           <div className='flex items-center justify-center'>
@@ -88,7 +88,7 @@ const Sidebar = () => {
         </button>
         
         <button 
-           className={`flex group text-left px-3 py-2 hover:bg-gray-100 rounded-xl dark:hover:bg-blue-400/5 
+           className={`flex group text-left px-3 py-2 hover:bg-gray-100 rounded-lg dark:hover:bg-blue-400/5 
            ${isCollapsed ? 'w-full flex items-center justify-center' : 'w-36'}`}
            >
           <div className=' '>
@@ -109,8 +109,8 @@ const Sidebar = () => {
 
         </button>
         <button 
-          onClick={adminLogout}
-          className={`flex group text-left px-3 py-2 hover:bg-gray-100 rounded-xl dark:hover:bg-blue-400/5 
+          onClick={() => setLogoutConfirm(true)}
+          className={`flex group text-left px-3 py-2 hover:bg-gray-100 rounded-lg dark:hover:bg-blue-400/5 
           ${isCollapsed ? 'w-full flex items-center justify-center' : 'w-36'}`
           }>
           <div>
@@ -125,10 +125,10 @@ const Sidebar = () => {
         </div>
        <hr className='my-2 border-gray-300' /> 
 
-       <div className='flex justify-between flex-col'>
+       <div className='flex relative justify-between flex-col'>
         <NavLink 
           to='dashboard' 
-          className='w-full text-left flex gap-3 hover:bg-gray-100 rounded-xl dark:hover:bg-blue-400/5 py-2 px-2'
+          className='w-full text-left flex gap-3 hover:bg-gray-50 rounded-xl dark:hover:bg-blue-400/5 py-2 px-2'
           >
           <House strokeWidth={1}/>
           {!isCollapsed && 
@@ -138,22 +138,37 @@ const Sidebar = () => {
 
         <NavLink 
           to='users' 
-          className='w-full text-left flex gap-3 hover:bg-gray-100 rounded-xl dark:hover:bg-blue-400/5 py-2 px-2'
+          className='w-full text-left flex gap-3 hover:bg-gray-50 rounded-xl dark:hover:bg-blue-400/5 py-2 px-2'
           >
           <UserRound strokeWidth={1}/>
           {!isCollapsed && 
           <span>Users</span>
           }
        </NavLink>
+
+       <NavLink
+       to=""
+       className='w-full text-left flex gap-3 hover:bg-gray-50 rounded-xl dark:hover:bg-blue-400/5 py-2 px-2'
+       >
+        <Shirt strokeWidth={1}/>
+        <span>Rentals</span>
+       </NavLink>
       
       <NavLink 
           to='inventory' 
-          className='w-full text-left flex gap-3 hover:bg-gray-100 rounded-xl dark:hover:bg-blue-400/5 py-2 px-2'
+          className='w-full text-left flex gap-3 hover:bg-gray-50 rounded-xl dark:hover:bg-blue-400/5 py-2 px-2'
           >
           <ShelvingUnit strokeWidth={1}/>
           {!isCollapsed && 
           <span>Inventory</span>
           }
+      </NavLink>
+
+      <NavLink
+         to='trash'
+         className='w-full text-left flex gap-3 hover:bg-gray-50 rounded-xl dark:hover:bg-blue-400/5 py-2 px-2'
+      >
+       <Trash2 strokeWidth={1} color='red'/>Trash
       </NavLink>
        
       </div> 

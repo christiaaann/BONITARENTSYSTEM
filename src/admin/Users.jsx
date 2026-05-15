@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useEffect, useRef } from 'react';
-import { ChartNoAxesCombined, ChevronUp, Database, Mail, Moon, Pencil, Sun, Trash } from 'lucide-react';
+import { ChartNoAxesCombined, ChevronUp, Database, Mail, MapPinHouse, Moon, Pencil, Phone, Sun, Trash } from 'lucide-react';
 import { useUsers } from '../context/UserContext';
 const Users = ({setTheme}) => {
-  const { users, deleteUser } = useUsers();
+  const { users, deleteUser, permanentDeleteUser } = useUsers();
 
   const [name, setName] =  useState('');
   const [email, setEmail] = useState('');
@@ -30,7 +30,7 @@ const Users = ({setTheme}) => {
   
   // Filter Select Dropdown
   const [openSelect, setOpenSelect] = useState(false);
-  const [filterRole, setFilterRole] = useState('All');
+  const [filterRole, setFilterRole] = useState('user');
 
 
 
@@ -65,9 +65,13 @@ const Users = ({setTheme}) => {
   //       },
   //       body: JSON.stringify({ name, email, role }),
   //     });
-
-  //     alert('User added successfully!');
   //     const data = await response.json();
+  //     if (!response.ok) {
+  //     alert(data.error);
+  //     return;
+  //      }
+  //     alert('User added successfully!');
+     
   //     console.log(data);
   //     // clear inputs
   //     setName('');
@@ -146,7 +150,7 @@ const Users = ({setTheme}) => {
           )}
          </div>
       
-       <div className='flex bg-gray-50 dark:bg-[#151C2D] border overflow-hidden rounded-xl  border-gray-200 dark:border-white/10 transition duration-300'>
+       <div className='flex items-center bg-gray-50 dark:bg-[#151C2D] border overflow-hidden rounded-xl  border-gray-200 dark:border-white/10 transition duration-300'>
        <aside className='flex gap-10 p-2  border-r-2 border-gray-200 dark:border-white/20 flex-col'>
        <span className='bg-gray-300 dark:bg-gray-800  shadow-sm w-3 h-3 rounded-full'></span>
        <span className='bg-gray-300 dark:bg-gray-800 w-3 h-3 shadow-sm rounded-full'></span>
@@ -160,10 +164,12 @@ const Users = ({setTheme}) => {
         {/* HEADER */}
         <thead>
           <tr className="text-gray-500 border-b-2 dark:border-white/5 border-gray-300">
-            <th className="p-5 text-center">ID</th>
-            <th className="p-5 text-center">Name</th>
+            <th className="p-5 text-left">ID</th>
+            <th className="p-5 text-left">Name</th>
             <th className="p-5 text-left">Email</th>
-            <th className="p-5 text-center text-blue-500">Role</th>
+            <th className="p-5 text-left">Contact</th>
+            <th className="p-5 text-center">Address</th>
+            <th className="p-5 text-left text-blue-500">Role</th>
             <th className="p-5 text-center text-red-700">Action</th>
           </tr>
         </thead>
@@ -176,13 +182,22 @@ const Users = ({setTheme}) => {
           return user.role === filterRole;
         })
         .map((user) => (
-            <tr key={user.id} className="border-b text-nowrap transition duration-300 group text-center border-gray-200 dark:border-white/5 hover:bg-gray-100 dark:hover:bg-white/5 dark:text-white">
+            <tr key={user.id} className="border-b text-nowrap transition duration-300 group border-gray-200 dark:border-white/5 hover:bg-gray-100 dark:hover:bg-white/5 dark:text-white">
               <td className="p-5">{user.id}</td>
               <td className="p-5">{user.name}</td>
               <td className="p-5 flex items-center gap-2"><Mail/>{user.email}</td>
+              <td className='p-5'>
+              <div className='flex items-center gap-2'>
+                <Phone />
+                {user.contact}
+              </div>
+            </td>
+              <td className='p-5 flex items-center gap-2'>
+               <MapPinHouse/>{user.address}
+
+              </td>
               <td className="p-5 bg-blue-50/65 group-hover:bg-blue-100 dark:group-hover:bg-blue-400/5 group-dark:bg-white/5 transition">{user.role}</td>
               <td className='flex gap-2 justify-center' >
-              <Pencil color='green' strokeWidth={1}/>
              <button 
                 className=' cursor-pointer'
                 onClick={() => deleteUser(user.id)}
