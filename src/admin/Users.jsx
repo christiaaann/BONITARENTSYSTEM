@@ -108,7 +108,7 @@ const Users = ({setTheme}) => {
 
         <div className='min-h-screen bg-white dark:bg-[#0C1221] transition duration-300 flex justify-center'>
         <div className='shadow-sm bg-white dark:bg-[#121A2B] transition-colors duration-500 rounded-xl w-full flex flex-col gap-5 p-2'>
-        <div className='flex'>
+        {/* <div className='flex'>
          <div className=' flex gap-2 w-full'>
           <div className='h-4 w-4 bg-red-600 rounded-full'></div>
           <div className='h-4 w-4 bg-yellow-200 rounded-full'></div>
@@ -124,15 +124,15 @@ const Users = ({setTheme}) => {
           </div>
          )}
          </div>
-        </div>
+        </div> */}
 
-         <div className='flex justify-between '>
+         {/* <div className='flex justify-between '>
           <div className='flex items-center gap-2'>
             <div className='bg-blue-100 dark:bg-violet-500/5 dark:text-white rounded-2xl w-10 h-10 flex items-center justify-center '><Database size={20} strokeWidth={1}/></div><h1 className='text-xl dark:text-white font-semibold'></h1>
           </div>
 
             
-         </div>
+         </div> */}
 
          <div className='flex relative justify-end '>
           <button onClick={() => setOpenSelect(!openSelect)} className='border flex capitalize gap-1 py-1 px-4 border-neutral-200 dark:border-white/5 dark:bg-[#151C2D] dark:text-white/50  rounded-sm'>

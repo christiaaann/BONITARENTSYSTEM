@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { data } from "react-router-dom";
 
 const UserContext = createContext();
 
@@ -7,6 +8,13 @@ export const UserProvider = ({ children }) => {
  const [admins, setAdmins] = useState([]);
  const [softdeleted, setSoftDeleted] = useState([]);
  const [trashUsers, setTrashUsers] = useState([]);
+
+//  customize alert
+const [alertpermantdelete, setAlertPermanentDelete] = useState({
+  show: false,
+  message: ''
+});
+
 // fetchusers
   const fetchUsers = async () => {
     try{
@@ -17,6 +25,7 @@ export const UserProvider = ({ children }) => {
     //admin filter
       const onlyAdmins = data.filter(user => user.role === 'admin');
       setAdmins(onlyAdmins);
+      
                
     }catch (error) {
       console.error('Error fetching users:', error);
@@ -73,12 +82,23 @@ const permanentDeleteUser = async (id) => {
     const confirmDelete = confirm("Are you sure you wnat delete Permanent?");
     if (!confirmDelete) return;
     try{
-       await fetch(`http://localhost:3000/api/users/${id}`, {
+       const res = await fetch(`http://localhost:3000/api/users/${id}`, {
        method:"DELETE",
-     })
-     alert("Usr Permanent Deleted");
-     fetchUsers();
-     fetchTrashUsers();
+     });
+
+      const data = await res.json();
+      setAlertPermanentDelete({
+      show: true,
+      message: data.message
+      });
+      
+      setTimeout(() => {
+      setAlertPermanentDelete({show: false, message: ''});
+      }, 3000);
+
+      fetchUsers();
+      fetchTrashUsers();
+
     }catch (err){
     console.error('Error deleting user') 
     }   
@@ -96,7 +116,9 @@ const permanentDeleteUser = async (id) => {
        value={{
          users, 
          admins, 
-         trashUsers, 
+         trashUsers,
+         alertpermantdelete,
+         setAlertPermanentDelete, 
          fetchUsers, 
          fetchTrashUsers, 
          deleteUser, 

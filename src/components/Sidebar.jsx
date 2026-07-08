@@ -5,8 +5,8 @@ import { useAuth } from '../context/AuthContext';
 const Sidebar = () => {
    const [isCollapsed, setIsCollapsed] = useState(false);
    const [openMenu, setOpenMenu] = useState(false);
-   const {user} = useAuth();
-   const {logout, showLogoutConfirm, setLogoutConfirm,} = useAuth(); 
+
+   const {user, logout, showLogoutConfirm, setLogoutConfirm,} = useAuth(); 
    const adminLogout = () => {
    logout();
    window.location.href = "/"
@@ -45,10 +45,21 @@ const Sidebar = () => {
 
       <hr className='my-2 border-gray-300' />
        <div className='flex justify-between items-center gap-2'>
-        <span 
-          className='bg-gray-100 dark:bg-blue-400/5 w-10 h-10 rounded-full flex items-center justify-center'>
-          {user?.name.split(" ").map(n => n[0]).join("")}
-        </span>
+           
+              {user?.picture ? (
+              <img
+                className=' w-10 h-10 rounded-full'
+                referrerpolicy="no-referrer" 
+                src={user?.picture} 
+                alt="" 
+              />
+              ):(
+            <div className="w-10 h-10 bg-gray-400 text-white flex items-center justify-center rounded-full">
+               {user?.name.split(" ").map(n => n[0]).join("").toUpperCase()}
+            </div>
+              
+             )}
+         
           
           {!isCollapsed && 
           <h1 className='text-nowrap'>
@@ -76,7 +87,7 @@ const Sidebar = () => {
         
           {isCollapsed && <UserPen strokeWidth={1}/>}
         
-          {!isCollapsed && <span>MyAccount</span>} 
+          {!isCollapsed && <span>Account</span>} 
           
           {isCollapsed && 
             <span className=' group-hover:block px-2 py-2 rounded-bl-xl hidden text-gray-400 shadow-sm absolute left-16 bg-white dark:bg-blue-400/5 backdrop-blur-sm z-10'

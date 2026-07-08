@@ -3,8 +3,10 @@ import React from 'react'
 const ApparelToolbar = () => {
   return (
      <>
-     <div className='bg-white shadow-sm p-2 rounded'>
-      <input className=' outline-none bg-gray-100 py-2 px-6 rounded-full' type="text" placeholder='search' />
+     <div className='bg-white flex justify-center mt-2 rounded'>
+      <input className=' outline-none shadow rounded-full py-2 bg-gray-100 px-6' 
+         type="text" 
+         placeholder='Search Product' />
      </div>
      </>
   )

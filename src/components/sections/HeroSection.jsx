@@ -33,7 +33,7 @@ const HeroSection = () => {
      return () => clearInterval(interval);   
     })
     return (
-    <section className='h-250 relative overflow-hidden'>
+    <section className='h-screen relative overflow-hidden'>
    
       <UserHeader 
       />
@@ -48,15 +48,33 @@ const HeroSection = () => {
     />
   ))}
      
-    <div className="absolute inset-0 bg-amber-900/30"></div>
+    <div className="absolute inset-0 bg-amber-900/50"></div>
      <div className='flex text-white/60 relative h-full'>
-     <div className='w-full flex flex-col gap-3 items-center justify-center p-20'>
+     <div className='w-350 mx-auto flex flex-col gap-3 justify-center p-20'>
        <h1 className='font-serif text-7xl'>RENT</h1>
        <div className='flex gap-12 items-center'>
        <p className='text-5xl'>anything</p>
        <p className='font-[Andasia] text-6xl text-nowrap'>you need</p>
        </div>
        <h1 className='font-serif text-7xl'>ANYTIME</h1>   
+     <div className="relative w-96">
+      {/* Ang iyong Input field */}
+      <input
+        className="bg-amber-900/80 text-white pl-4 pr-32 rounded-full w-full py-3 outline-none" 
+        type="text" 
+        name="search" 
+        id="search" 
+        placeholder="What do you need to rent today?"
+      />
+      
+      {/* Ang Button sa loob ng input */}
+      <button 
+        type="submit"
+        className="absolute px-10 shadow right-1 top-1 bottom-1 bg-amber-700 hover:bg-amber-600 text-white rounded-full text-sm font-medium transition-colors"
+      >
+       FIND
+      </button>
+    </div>
      </div>
        
 

@@ -1,8 +1,11 @@
-import { Ellipsis, Plus, Trash, UserRoundPlusIcon, Users } from 'lucide-react'
+import { CircleCheck, Ellipsis, Plus, Trash, UserRoundPlusIcon, Users } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
 import { useUsers } from '../context/UserContext';
+import { useAuth } from '../context/AuthContext';
 const HeaderAdmin = () => {
-   const {users, fetchUsers, admins, permanentDeleteUser} = useUsers();
+        
+   const {users, fetchUsers, admins, permanentDeleteUser, alertpermantdelete} = useUsers();
+   const {user} = useAuth();
    const [modalAdmin, setModalAdmin] = useState(false); 
    const [boxadmin, setBoxAdmin]= useState(null);
    const [addedModalUsers, setAddedModalUsers] = useState(false);
@@ -11,6 +14,52 @@ const HeaderAdmin = () => {
    const [email,setEmail] = useState('');
    const [role, setRole] = useState('');
    
+  //  validation 
+  const [formError, setFormError] = useState('');
+  // Custom Alert box!
+  const [myAlert, setMyAlert] = useState({
+     show: false,
+     message: ''
+   });
+  
+
+  // greetings admin
+  const [greeting, setGreeting] = useState('');
+  const [currentDate, setCurrentDate] = useState('');
+  useEffect(() => {
+    const getGreetingByTime = () => {
+      const hr = new Date().getHours();
+      if (hr >= 5 && hr < 12)  return 'Good morning';
+      if (hr >= 12 && hr < 17) return 'Good afternoon';
+      if (hr >= 17 && hr < 22) return 'Good evening';
+      return 'Good night';
+    };
+    setGreeting(getGreetingByTime());
+
+    // Function para i-update ang Date at Time
+  const updateClock = () => {
+    const now = new Date();
+    
+    const options = { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit' // Alisin mo ito kung ayaw mo ng gumagalaw na segundo
+    };
+    
+    setCurrentDate(now.toLocaleDateString('en-US', options));
+  };
+
+  updateClock(); 
+  const timer = setInterval(updateClock, 1000);
+  return () => clearInterval(timer);
+  }, []);
+
+
+
   //  submit
    const handleSubmit = async (e) => {
    e.preventDefault();
@@ -29,27 +78,51 @@ const HeaderAdmin = () => {
       body: JSON.stringify({ name, email, role }),
     });
 
+    const data = await response.json();
+    if(!response.ok) {
+    setFormError(data.error);
+    return;
+    }
+
     setName("");
     setEmail("");
     setRole("");
     
     fetchUsers();
     setAddedModalUsers(false);
-    // check error from backend
-     const data = await response.json();
-    if (!response.ok) {
-      alert(data.error);
-      return;
-    }
     
-    alert(data.message || "Admin added successfully");
+    // alert(data.message || "Admin added successfully");
+    setMyAlert({
+    show: true,
+    message: data.message   
+    });
+    
+    setTimeout(() => {
+    setMyAlert({ show: false, message: '' });
+    }, 3000);
+
     }catch(error){
     console.error("Error adding admin ",error);
     }
   }
 
   return (
-    <header className=' border-b border-gray-200 bg-white flex items-center justify-end pr-8 h-16'>
+    <>
+    <header className=' border-b relative pl-5 border-gray-200 bg-white flex items-center justify-between pr-8 h-16'>
+       
+      <div className=''>
+       <p className='text-sm text-gray-400 font-medium'>
+       {currentDate}
+       </p>
+       <div 
+       className='flex gap-2 items-center'
+       >
+       <h1 className='text-gray-500'>{greeting},</h1>
+       <h1 className='font-semibold'> {user?.name}</h1>
+       </div> 
+       
+      </div>
+
      <button
       onClick={() => setModalAdmin(true)}
       className='cursor-pointer bg-gray-100 flex justify-center items-center  w-10 h-10 rounded-full shadow font-semibold text-lg text-gray-600'
@@ -86,9 +159,17 @@ const HeaderAdmin = () => {
           {/* adminusers added */}
           {addedModalUsers && (
             <div className='fixed inset-0 z-10 flex justify-center items-center'>
-              <div className='bg-white shadow w-120 h-60 rounded-lg p-5'>
+              <div className='bg-white shadow w-120 rounded-lg p-5'>
                <form onSubmit={handleSubmit}>
                <div className='flex gap-2 flex-col'>
+
+               {formError && (
+               <div className='bg-red-50 border-l-4 border-red-500 text-red-700 p-3 rounded-r-lg text-sm font-medium flex items-center gap-2 transition-all duration-200'>
+               <span>⚠️</span>
+               <span>{formError}</span>
+               </div>
+               )}
+
                <input 
                  type="text" 
                  value={name}
@@ -115,7 +196,7 @@ const HeaderAdmin = () => {
                 </select>
                <button 
                  type='submit'
-                 className='bg-gray-100 py-2 rounded-xl'
+                 className='cursor-pointer bg-gray-100 py-2 rounded-xl'
                 >
                 Submit
               </button>
@@ -152,7 +233,7 @@ const HeaderAdmin = () => {
               />
               ):(
             <div className="w-12 h-12 bg-gray-400 text-white flex items-center justify-center rounded-full">
-               {admin?.name.split(" ").map(n => n[0]).join("")}
+               {admin?.name.split(" ").map(n => n[0]).join("").toUpperCase()}
             </div>
               
              )}
@@ -191,7 +272,27 @@ const HeaderAdmin = () => {
         </div>
       </div>  
      )}
+
+     {/* customize alert */}
+      {myAlert.show && (
+       <div className="fixed right-20 z-50">
+        <div className='bg-white flex gap-2 border-2 shadow shadow-green-600/40 rounded border-green-600/50 p-2 w-100'>
+           <CircleCheck color='green'/>
+           <p className='text-green-600'>{myAlert.message}</p>
+        </div>
+       </div>
+     )}
+      
+       {alertpermantdelete.show && (
+       <div className="fixed right-20 z-50">
+        <div className='bg-white flex gap-2 border-2 shadow shadow-red-600/50 rounded border-red-600/50 p-2 w-100'>
+           <CircleCheck color='red'/>
+           <p className='text-red-600'>{alertpermantdelete.message}</p>
+        </div>
+       </div>
+     )}
     </header>
+    </>
   )
 }
 
