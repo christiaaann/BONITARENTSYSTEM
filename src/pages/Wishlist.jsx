@@ -65,9 +65,6 @@ const Wishlist = () => {
               A curated lookbook of your premium selected garments.
             </p>
           </div>
-          <div className="text-xs font-mono tracking-wider text-[#8a8a80] uppercase bg-[#f4f4f0] border border-[#e5e5e0] px-3 py-1 rounded-full w-fit">
-            {items.length} {items.length === 1 ? 'Piece' : 'Pieces'}
-          </div>
         </div>
 
         {/* EMPTY STATE */}
@@ -77,7 +74,7 @@ const Wishlist = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="bg-white border border-[#e5e5e0] rounded-xl py-24 px-6 text-center max-w-md mx-auto shadow-sm"
+              className=" py-24 px-6 text-center max-w-md mx-auto"
             >
               <div className="w-12 h-12 rounded-full bg-[#fbfbfa] border border-[#e5e5e0] flex items-center justify-center text-[#c2c2bb] mx-auto mb-5">
                 <Heart size={18} />
@@ -92,7 +89,7 @@ const Wishlist = () => {
                 onClick={() => navigate('/')}
                 className="mt-6 inline-flex items-center gap-2 bg-[#191919] hover:bg-[#e05252] text-white text-xs font-medium px-5 py-2.5 rounded-lg transition-colors duration-300 tracking-wide"
               >
-                Browse Showroom
+                Browse
                 <ShoppingBag size={12} />
               </button>
             </motion.div>

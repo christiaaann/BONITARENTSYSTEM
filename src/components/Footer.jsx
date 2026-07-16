@@ -49,7 +49,7 @@ const Footer = () => {
             <ul className="space-y-2.5 text-sm font-light text-zinc-600">
               <li><a href="#" className="hover:text-rose-500 transition-colors">Collection</a></li>
               <li><a href="#" className="hover:text-rose-500 transition-colors">How it Works</a></li>
-              <li><a href="#" className="hover:text-rose-500 transition-colors">Policies</a></li>
+              <li><a href="/policies" className="hover:text-rose-500 transition-colors">Policies</a></li>
               <li><a href="#" className="hover:text-rose-500 transition-colors">FAQs</a></li>
             </ul>
           </div>
@@ -58,9 +58,9 @@ const Footer = () => {
           <div>
             <h4 className="text-[10px] font-semibold tracking-widest text-zinc-400 uppercase mb-4">Our Terms</h4>
             <ul className="space-y-2.5 text-sm font-light text-zinc-600">
-              <li><a href="#" className="hover:text-rose-500 transition-colors">Rental Agreement</a></li>
-              <li><a href="#" className="hover:text-rose-500 transition-colors">Damages & Liability</a></li>
-              <li><a href="#" className="hover:text-rose-500 transition-colors">Cancellation Policy</a></li>
+              <li><a href="/policies" className="hover:text-rose-500 transition-colors">Rental Agreement</a></li>
+              <li><a href="/policies" className="hover:text-rose-500 transition-colors">Damages & Liability</a></li>
+              <li><a href="policies" className="hover:text-rose-500 transition-colors">Cancellation Policy</a></li>
             </ul>
           </div>
 
@@ -78,13 +78,13 @@ const Footer = () => {
                 <div className="p-2.5 border border-zinc-200 rounded-xl bg-white shadow-sm group-hover:bg-rose-500/10 group-hover:border-rose-500/20 transition-colors duration-300">
                   <Mail className="w-4 h-4 text-rose-500" />
                 </div>
-                <span>hello@bonitarental.com</span>
+                <span>bonitarental@ggmail.com</span>
               </li>
               <li className="flex items-start gap-3 hover:text-black transition-colors group">
                 <div className="p-2.5 border border-zinc-200 rounded-xl bg-white shadow-sm shrink-0 mt-0.5 group-hover:bg-rose-500/10 group-hover:border-rose-500/20 transition-colors duration-300">
                   <MapPin className="w-4 h-4 text-rose-500" />
                 </div>
-                <span>Metro Manila, Philippines</span>
+                <span>Irosin Sorsogon, Philippines</span>
               </li>
             </ul>
           </div>

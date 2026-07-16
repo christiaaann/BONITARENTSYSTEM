@@ -3,7 +3,7 @@ import image1 from '../../assets/image1.jpg'
 import image2 from '../../assets/image2.jpg'  
 import image3 from '../../assets/image3.jpg'
 import { ArrowDown } from 'lucide-react'
-import UserHeader from '../layout/UserHeader'
+// import UserHeader from '../UserHeader'
 const HeroSection = () => {
     const images = [image1, image2, image3];
     const [current, setCurrent] = useState(0);
@@ -33,10 +33,7 @@ const HeroSection = () => {
      return () => clearInterval(interval);   
     })
     return (
-    <section className='h-screen relative overflow-hidden'>
-   
-      <UserHeader 
-      />
+    <div className='relativ overflow-hidden'>
 
     {images.map((img, index) => (
     <img
@@ -86,7 +83,7 @@ const HeroSection = () => {
        </div> */}
     </div>  
    
-    </section>
+    </div>
   )
 }
 
