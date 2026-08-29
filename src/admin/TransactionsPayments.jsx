@@ -277,7 +277,7 @@ const TransactionsPayments = () => {
             <div className="bg-white border border-stone-200 text-stone-800 rounded-lg p-6 font-mono text-xs relative overflow-hidden">
               
               {/* Jagged / Sawtooth Top Pattern Simulation */}
-              <div className="absolute top-0 left-0 right-0 h-1.5 bg-repeat-x bg-[radial-gradient(circle_at_bottom,_transparent_4px,_#f5f5f4_4px)]" />
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-repeat-x bg-[radial-gradient(circle_at_bottom,transparent_4px,#f5f5f4_4px)]" />
 
               {/* Header Logo & Store Info */}
               <div className="text-center pb-4 border-b border-dashed border-stone-300">
@@ -304,7 +304,7 @@ const TransactionsPayments = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-stone-500">CUSTOMER:</span>
-                  <span className="truncate max-w-[150px] font-medium">{selectedTxn.customer_name}</span>
+                  <span className="truncate max-w-37.5 font-medium">{selectedTxn.customer_name}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-stone-500">PAYMENT VIA:</span>

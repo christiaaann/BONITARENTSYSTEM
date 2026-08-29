@@ -1,10 +1,9 @@
-  import { useEffect, useRef, useState } from 'react';
-  import { ArrowDown, ArrowRight, Search } from 'lucide-react';
-  import image1 from '../../assets/image1.jpg';
-  import image2 from '../../assets/image2.jpg';
-  import image3 from '../../assets/image3.jpg';
+import { useEffect, useRef, useState } from 'react';
+import { Search } from 'lucide-react';
+import image1 from '../../assets/image1.jpg';
+import image2 from '../../assets/image2.jpg';
+import image3 from '../../assets/image3.jpg';
 import { useNavigate } from 'react-router-dom';
-import CustomParticles from '../ui/CustomParticles';
 
 const slides = [image1, image2, image3];
 const HeroSection = () => {
@@ -111,9 +110,8 @@ useEffect(() => {
 
     return (
       <>
-      <section className="relative flex items-center max-w-360 mt-28 mx-auto md:rounded-4xl isolate  overflow-hidden bg-stone-950 sm:min-h-162.5">
+      <section className="relative flex items-center max-w-360 md:mt-20 mx-auto md:rounded-4xl isolate  overflow-hidden bg-stone-950 sm:min-h-162.5">
         <div className="absolute inset-0 z-10">
-       <CustomParticles />
        </div>
         {slides.map((image, index) => (
           <img
@@ -164,14 +162,14 @@ useEffect(() => {
 <div
   className={`relative z-100 w-full transition-transform duration-500 ease-in-out ${
     isSearching
-      ? "-translate-y-87.5"
+      ? "md:-translate-y-87.5 -translate-y-50"
       : "translate-y-0"
   }`}
 >
  <div ref={searchRef} className="relative mt-9 w-full z-200">
 
     <input
-    className="w-full rounded-full focus:outline-amber-100 focus:outline-4 bg-white/90 px-6 py-5 pr-38 text-black placeholder:font-semibold placeholder:text-stone-500"
+    className="w-full rounded-full focus:outline-amber-100 focus:outline-4 bg-white/90 px-6 md:py-5 py-3 pr-38 text-black placeholder:font-semibold placeholder:text-stone-500"
     placeholder="Describe what you need"
     autoComplete="off"
     value={searchItem}
@@ -191,7 +189,7 @@ useEffect(() => {
   <button
     type="button"
     onClick={scrollToCatalog}
-    className="absolute right-2 top-1/2 flex -translate-y-1/2 cursor-pointer items-center gap-2 rounded-full bg-stone-800 px-10 py-3 text-lg tracking-[0.16em] text-white transition-colors hover:bg-stone-700"
+    className="absolute right-2 top-1/2 flex -translate-y-1/2 cursor-pointer items-center gap-2 rounded-full bg-stone-800 md:px-10 px-5 md:py-3 py-1 text-lg tracking-[0.16em] text-white transition-colors hover:bg-stone-700"
   >
   <Search />
     Search
