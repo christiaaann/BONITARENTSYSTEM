@@ -10,7 +10,7 @@ import Inventory from "../admin/Inventory";
 import Trash from "../admin/Trash";
 import ActiveRentals from "../admin/ActiveRentals";
 import ReturnsAndOverdue from "../admin/ReturnsAndOverdue";
-import TransactionsPayments from "../admin/transactionspayments";
+import TransactionsPayments from "../admin/TransactionsPayments";
 
 const AdminRoutes = () => {
 
