@@ -13,7 +13,7 @@ import {
   Send
 } from 'lucide-react';
 
-const TransactionsAndPayments = () => {
+const TransactionsPayments = () => {
   const [transactions, setTransactions] = useState([
     {
       id: 1,
@@ -430,4 +430,4 @@ const TransactionsAndPayments = () => {
   );
 };
 
-export default TransactionsAndPayments;
+export default TransactionsPayments;
