@@ -8,9 +8,10 @@ import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 import Categories from '../components/Home/Categories';
 import FilterProductCategory from '../components/Home/FilterProductCategory';
+import SearchBar from '../components/SearchBar';
 const Landing = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, items, setItems } = useAuth();
   const { wishlist, setWishlist } = useWishlist();
   const [preview, setPreview] = useState(null);
   const [products, setProducts] = useState([]);
@@ -22,12 +23,12 @@ const Landing = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [modalGoogleAccount, setmodalGoogleAccount] = useState(false);
   const [step, setStep] = useState("google");
-  
+  const [searchItem, setSearchItem] = useState("");
 
   useEffect(() => {
   if (!user) return;
 
-  fetch(`http://localhost:3000/api/wishlist/${user.id}`)
+  fetch(`${import.meta.env.VITE_API_URL}/api/wishlist/${user.id}`)
     .then(res => res.json())
     .then(data => {
       if (!Array.isArray(data)) {
@@ -45,7 +46,7 @@ const toggleWishlist = async (productId) => {
   const isInWishlist = wishlist.includes(productId);
 
   if (!isInWishlist) {
-    await fetch("http://localhost:3000/api/wishlist", {
+    await fetch(`${import.meta.env.VITE_API_URL}/api/wishlist`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -57,7 +58,7 @@ const toggleWishlist = async (productId) => {
     setWishlist(prev => [...prev, productId]);
   } 
   else {
-    await fetch("http://localhost:3000/api/wishlist", {
+    await fetch(`${import.meta.env.VITE_API_URL}/api/wishlist`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -75,7 +76,7 @@ const toggleWishlist = async (productId) => {
   const handleCompleteProfile = async () => {
     setIsSubmitting(true);
     try {
-      const res = await fetch("http://localhost:3000/api/complete-profile", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/complete-profile`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -98,6 +99,8 @@ const toggleWishlist = async (productId) => {
     }
   };
 
+
+  //================================== 
   // Auth States Checking
   useEffect(() => {
     if (user) {
@@ -111,24 +114,47 @@ const toggleWishlist = async (productId) => {
       } else {
         setmodalGoogleAccount(false);
       }
-    } else if (user === null) {
-      const timer = setTimeout(() => {
-        setmodalGoogleAccount(true);
-      }, 1200);
-      return () => clearTimeout(timer);
     }
   }, [user, navigate]);
 
+  //  else if (user === null) {
+  //     const timer = setTimeout(() => {
+  //       setmodalGoogleAccount(true);
+  //     }, 1200);
+  //     return () => clearTimeout(timer);
+  //   }
+  
+  // ================================
+
+  // ================================
+  // button rent
+  const handleRent = (productId) => {
+  if (!user) {
+    setStep("google");
+   navigate('/login');
+    return;
+  }
+
+  if (!user.address || !user.contact) {
+    setStep("complete");
+    setmodalGoogleAccount(true);
+    return;
+  }
+
+  navigate(`/product/${productId}`);
+};
+
+// =================================
 
   const loginWithGoogle = () => {
-    window.location.href = "http://localhost:3000/auth/google";
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
   };
 
 
   useEffect(() => {
     const fetchProducts = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/apparel');
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/apparel`);
       const data = await res.json();
       setProducts(data);
     } catch (err) {
@@ -141,7 +167,7 @@ const toggleWishlist = async (productId) => {
   
   // Socket Realtime Listeners
   useEffect(() => {
-    const socket = io("http://localhost:3000", {
+    const socket = io(`${import.meta.env.VITE_API_URL}`, {
       withCredentials: true,
       transports: ["polling", "websocket"]
     });
@@ -165,8 +191,14 @@ const toggleWishlist = async (productId) => {
     <div className="bg-neutral min-h-screen font-sans antialiased selection:bg-amber-900/10 selection:text-amber-900">
 
       {/* Main Content Area */}
-      <main className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-2 py-16 flex flex-col gap-12'>
+     <main id="catalog" className='scroll-mt-24 px-4 pt-14 pb-16 sm:px-6 lg:px-2 flex flex-col gap-12'>
         
+       {/* <SearchBar
+       products={products}
+       searchItem={searchItem}
+       setSearchItem={setSearchItem}
+       /> */}
+      
         {/* Modern Tab Categories */}
         <Categories
         selectedCategory={selectedCategory}
@@ -176,12 +208,15 @@ const toggleWishlist = async (productId) => {
 
         {/* Dynamic Products Grid */}
        <FilterProductCategory
+        user={user}
         products={products}
         selectedCategory={selectedCategory}
+        searchItem={searchItem}
         wishlist={wishlist}
         toggleWishlist={toggleWishlist}
         setPreview={setPreview}
         navigate={navigate}
+        handleRent={handleRent}
       />
    
       </main>
@@ -234,7 +269,7 @@ const toggleWishlist = async (productId) => {
                 <div className="p-8 flex flex-col items-center justify-center text-center gap-6">
                   <div className="space-y-2">
                     <h1 className="font-serif text-4xl tracking-wide text-neutral-900">BONITA</h1>
-                    <div className="w-8 h-[2px] bg-amber-800/40 mx-auto rounded"></div>
+                    <div className="w-8 h-0.5 bg-amber-800/40 mx-auto rounded"></div>
                   </div>
 
                   <p className="text-sm leading-relaxed text-neutral-500 max-w-xs">
@@ -258,7 +293,7 @@ const toggleWishlist = async (productId) => {
               {step === "complete" && (
                 <div className="flex flex-col">
                   {/* Modal Visual Header */}
-                  <div className='bg-gradient-to-br from-neutral-900 to-amber-950 flex flex-col justify-center items-center relative p-8 h-44 text-center'>
+                  <div className='bg-linear-to-br from-neutral-900 to-amber-950 flex flex-col justify-center items-center relative p-8 h-44 text-center'>
                     <h1 className="text-2xl font-serif tracking-widest text-neutral-100">BONITA</h1>
                     <p className="text-xs text-neutral-300/80 font-sans tracking-wide mt-1">Refining your rental experience</p>
                     

@@ -3,11 +3,44 @@ import { createContext, useContext, useState, useEffect } from "react";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  
+  const [user, setUser] = useState(undefined);
+// =========================================================================
+  const [users, setUsers] = useState([]);
+//========================================================================== 
+  const [items, setItems] = useState([]);
+// ========================================================================= 
+  useEffect(() => {
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch('http://localhost:3000/api/users');
+      const data = await res.json();
+      setUsers(data);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  };
+  fetchUsers();
+}, []);
+// ==========================================================================
+useEffect (() => {
+  const fetchItems = async () => {
+  try {
+  const res = await fetch ('http://localhost:3000/api/apparel');
+  const data = await res.json();
+  setItems(data);
+  }catch (error) {
+  console.error('Error fetching items', error);
+    }  
+  };
+  fetchItems();
+}, [])
+// =========================================================================
   // UI Context
+  const [authStep, setAuthStep] = useState("google");
   const [showLogoutConfirm, setLogoutConfirm] = useState(false);
-
+  const [showGoogleModal, setShowGoogleModal] = useState(false);
+  
+  //======================================================================== 
   // fetch user (AUTO via cookie)
   useEffect(() => {
     fetch("http://localhost:3000/api/me", {
@@ -25,6 +58,15 @@ export const AuthProvider = ({ children }) => {
       });
   }, []);
 
+//  ============================================================================
+  const openGoogleModal = () => {
+  setShowGoogleModal(true);
+};
+
+const closeGoogleModal = () => {
+  setShowGoogleModal(false);
+};
+// =============================================================================
   // logout
   const logout = async () => {
     setUser(null);
@@ -38,10 +80,19 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider value={{
          user, 
+         users,
          setUser, 
          logout,
          showLogoutConfirm,
-         setLogoutConfirm 
+         setLogoutConfirm, 
+         showGoogleModal,
+         openGoogleModal,
+         closeGoogleModal,
+         authStep,
+         setAuthStep,
+         items,
+         setItems
+
         }}>
       {children}
    

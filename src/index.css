@@ -9,3 +9,23 @@
 html {
   scroll-behavior: smooth;
 }
+body {
+  @apply bg-stone-50/50;
+}
+/* Custom slim scrollbar para sa sidebar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px; /* Maliit at manipis na width */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #e7e5e4; /* Light stone color */
+  border-radius: 20px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #d6d3d1;
+}

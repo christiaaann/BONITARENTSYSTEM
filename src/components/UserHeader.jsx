@@ -1,23 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Heart, LogOut, Menu, X } from 'lucide-react';
+import { ChevronDown, Heart, LogOut, ShoppingBag, } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useWishlist } from '../context/WishlistContext';
-const UserHeader = ({}) => {
+import logo from '../assets/logo.png'
+const UserHeader = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
-  const [visible, setVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const [profilemodal, setprofileModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { wishlist } = useWishlist();
   const { user, setLogoutConfirm } = useAuth();
 
   const routes = {
-    Home: "/",
-    Shop: "/shop",
+    Shop: "/",
+    // Shop: "/shop",
     Policies: "/policies",
     About: "/about",
     Contact: "/contact",
@@ -26,29 +23,12 @@ const UserHeader = ({}) => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      if (currentScrollY > 20) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-
-      // Hide/Show logic habang nag-scroll
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setVisible(false);
-        setprofileModal(false);
-        setMobileMenuOpen(false); 
-      } else {
-        setVisible(true);
-      }
-
-      setLastScrollY(currentScrollY);
+      setScrolled(window.scrollY > 20);
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
   // Handle route navigation at pagsara ng mobile drawer
   const handleNav = (path) => {
@@ -57,43 +37,43 @@ const UserHeader = ({}) => {
   };
 
   return (
-    <div 
-      className={`fixed left-0 w-full z-50 px-4 sm:px-6 md:px-8 transition-all duration-500 ${
-        visible ? "top-3" : "top-[-120px]"
-      }`}
-    >
+    <div className="fixed inset-x-0 top-0 z-50">
       <motion.header
         layout
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className={`mx-auto flex flex-col md:flex-row md:items-center justify-between  bg-white/90 backdrop-blur-md border border-zinc-100 text-black shadow-sm transition-all duration-500 ${
-          mobileMenuOpen ? " rounded-xl py-4 px-6" : " rounded-full  py-3.5"
+        className={`mx-auto flex flex-col md:flex-row md:items-center justify-between bg-amber-50 backdrop-blur-md  border-zinc-100 text-black transition-all duration-500 ${
+          mobileMenuOpen ? "px-6 py-4" : ""
         } ${
           scrolled && !mobileMenuOpen
-            ? "max-w-6xl px-8"
-            : "max-w-7xl px-6 md:px-10"
+            ? "max-w-none px-6 md:px-8"
+            : "max-w-none px-6 md:px-8"
         }`}
       >
         {/* TOP BAR: Logo, Desktop Nav, and Controls */}
-        <div className="flex items-center justify-between w-full">
+        <div className="flex w-full items-center py-3  mx-auto max-w-7xl">
           
           {/* LEFT: LOGO */}
-          <h1 
+          <div className='flex gap-2 items-center'>
+           <img 
+            alt="" 
+            src={logo} 
             onClick={() => handleNav('/')} 
-            className='font-serif italic text-xl font-bold tracking-widest cursor-pointer select-none hover:opacity-80 transition-opacity'
-          >
-            BONITA
-          </h1>
-
+            className='object-contain w-14'
+          />
+          <h1 className=' text-xl object-contain  tracking-widest cursor-pointer select-none hover:opacity-80 transition-opacity'>BONITA</h1>
+            </div>
+          
+        
           {/* CENTER: DESKTOP NAV */}
-          <nav className='hidden md:flex items-center gap-8 font-sans text-[12px] font-medium tracking-wide uppercase'>
+          <nav className='hidden w-full md:flex justify-center gap-8  tracking-wide uppercase'>
             {Object.keys(routes).map((item) => {
               const isActive = location.pathname === routes[item];
               return (
                 <span
                   key={item}
                   onClick={() => handleNav(routes[item])}
-                  className={`relative group transition-colors duration-300 cursor-pointer ${
-                    isActive ? "text-black" : "text-neutral-500 hover:text-black"
+                  className={`relative group font-bold text-[12px] transition-colors duration-300 cursor-pointer ${
+                    isActive ? "text-black" : "text-black hover:text-black"
                   }`}
                 >
                   {item}
@@ -106,24 +86,19 @@ const UserHeader = ({}) => {
           </nav>
 
           {/* RIGHT: CONTROLS & MOBILE HAMBURGER */}
-          <div className="flex items-center gap-2 md:gap-3">
+          <div className="flex justify-end  w-full gap-5 md:gap-5"> 
+             {/* Rental Cart Quick Icon */}
+            <button 
+                  onClick={() => navigate("/rentalcart")}
+                  className="p-2 rounded-full hover:bg-neutral-100 relative transition-colors duration-200 group"
+                  title="Rental Cart"
+                >
+                  <ShoppingBag  color='black'  className="group-hover:scale-105 transition-transform" />
+            </button>
+                
             {user && user.email && user.address && user.contact ? (
               <div className='flex items-center gap-2 md:gap-3 relative'>
-                {/* Wishlist Quick Icon */}
-                <button 
-                  onClick={() => navigate("/Wishlist")}
-                  className="p-2 rounded-full hover:bg-neutral-100 relative transition-colors duration-200 group"
-                  title="Wishlist"
-                >
-                  <Heart color='black' size={18} className="group-hover:scale-105 transition-transform" />
-                  <span className={`absolute top-0.5 right-0.5 bg-rose-500 text-[9px] font-bold h-4 w-4 flex items-center justify-center rounded-full text-white scale-90
-                  ${wishlist.length === 0 ? "hidden" : ""
-                  }`}
-                  >
-                  {wishlist.length}
-                  </span>
-
-                </button>
+ 
 
                 {/* Profile Trigger */}
                 <div 
@@ -138,10 +113,12 @@ const UserHeader = ({}) => {
                   />
                   <ChevronDown color='black' size={14} className={`text-neutral-500 transition-transform duration-300 ${profilemodal ? 'rotate-180' : ''}`} />
                 </div>
-
+               
+     
+               {/* ========================================================= */}
                 {/* DROPDOWN MODAL (Desktop Only Aspect Fixed) */}
                 <AnimatePresence>
-                  {profilemodal && (
+                {profilemodal && (
                     <>
                       <div className="fixed inset-0 z-40" 
                        onClick={() => setprofileModal(false)} 
@@ -226,12 +203,22 @@ const UserHeader = ({}) => {
                 </AnimatePresence>
               </div>
             ) : (
-              <div className='w-8'></div> 
+
+              
+             
+              <button
+                onClick={() => navigate("/login")}
+                className=' py-2 px-5 rounded-full relative right-5  bg-[#0D0D0D] hover:bg-stone-800 text-sm uppercase text-amber-100 font-light'
+                >
+                  Sign up
+              </button>
+          
             )}
 
            
           </div>
-
+          
+          
         </div>
 
       </motion.header>

@@ -5,7 +5,7 @@ import { Outlet } from 'react-router-dom'
 
 const AdminLayout = () => {
   return (
-    <div className='flex min-h-screen'>
+    <div className='flex'>
 
       {/* Sidebar fixed left */}
       <Sidebar />

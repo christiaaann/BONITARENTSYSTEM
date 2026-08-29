@@ -3,9 +3,11 @@ import { Heart, ArrowRight, ShoppingBag } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useWishlist } from "../context/WishlistContext";
 
 const Wishlist = () => {
   const { user } = useAuth();
+  const { setWishlist } = useWishlist();
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,10 +15,11 @@ const Wishlist = () => {
   useEffect(() => {
     if (!user) return;
 
-    fetch(`http://localhost:3000/api/wishlist/${user.id}`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/wishlist/${user.id}`)
       .then((res) => res.json())
       .then((data) => {
         setItems(data);
+        setWishlist(Array.isArray(data) ? data.map((item) => item.product_id) : []);
         setLoading(false);
       })
       .catch((err) => {
@@ -27,7 +30,7 @@ const Wishlist = () => {
 
   const removeWishlist = async (productId) => {
     try {
-      await fetch("http://localhost:3000/api/wishlist", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/wishlist`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -36,7 +39,12 @@ const Wishlist = () => {
         }),
       });
 
+      if (!response.ok) {
+        throw new Error("Unable to remove wishlist item");
+      }
+
       setItems((prev) => prev.filter((item) => item.id !== productId));
+      setWishlist((prev) => prev.filter((id) => id !== productId));
     } catch (err) {
       console.log(err);
     }

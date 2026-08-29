@@ -108,20 +108,26 @@ const HeaderAdmin = () => {
 
   return (
     <>
-    <header className=' border-b relative pl-5 border-gray-200 bg-white flex items-center justify-between pr-8 h-16'>
+    <header className=' border-b relative pl-5 border-gray-200  flex items-center justify-between pr-8 h-16'>
        
-      <div className=''>
-       <p className='text-sm text-gray-400 font-medium'>
-       {currentDate}
-       </p>
-       <div 
-       className='flex gap-2 items-center'
-       >
-       <h1 className='text-gray-500'>{greeting},</h1>
-       <h1 className='font-semibold'> {user?.name}</h1>
-       </div> 
-       
-      </div>
+   <div className="flex items-center gap-3">
+  {/* Date Pill */}
+  <div className="bg-stone-100/80 px-2.5 py-1 rounded-md border border-stone-200/60">
+    <p className="text-xs font-medium text-stone-500">
+      {currentDate}
+    </p>
+  </div>
+
+  <span className="text-stone-300">•</span>
+
+  {/* Greeting & Name */}
+  <div className="flex items-center gap-1.5">
+    <span className="text-stone-500 text-sm">{greeting},</span>
+    <span className="text-stone-900 font-semibold text-sm">
+      {user?.name || 'Admin'}
+    </span>
+  </div>
+</div>
 
      <button
       onClick={() => setModalAdmin(true)}

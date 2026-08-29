@@ -4,10 +4,12 @@ import { data } from "react-router-dom";
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
- const [users, setUsers] = useState([]);
- const [admins, setAdmins] = useState([]);
- const [softdeleted, setSoftDeleted] = useState([]);
- const [trashUsers, setTrashUsers] = useState([]);
+const [users, setUsers] = useState([]);
+const [admins, setAdmins] = useState([]);
+const [softdeleted, setSoftDeleted] = useState([]);
+const [trashUsers, setTrashUsers] = useState([]);
+
+const [inventoryTrash, setInventoryTrash] = useState([]);
 
 //  customize alert
 const [alertpermantdelete, setAlertPermanentDelete] = useState({
@@ -104,6 +106,8 @@ const permanentDeleteUser = async (id) => {
     }   
   }
 
+
+  // 
     useEffect(() => { 
     fetchUsers();
     fetchTrashUsers();

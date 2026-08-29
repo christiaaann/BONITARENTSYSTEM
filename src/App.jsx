@@ -5,9 +5,11 @@ import PublicRoutes from './router/PublicRoutes';
 function App() {
   return (
    <BrowserRouter>
-      <Routes>
-      {PublicRoutes()}
+      
+=
      
+      <Routes>  
+      {PublicRoutes()}
       {AdminRoutes()}
       </Routes>
    </BrowserRouter>

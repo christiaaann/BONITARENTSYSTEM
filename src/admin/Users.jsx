@@ -1,223 +1,238 @@
-import { useState } from 'react'
-import { useEffect, useRef } from 'react';
-import { ChartNoAxesCombined, ChevronUp, Database, Mail, MapPinHouse, Moon, Pencil, Phone, Sun, Trash } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  ChevronDown, 
+  Mail, 
+  MapPin, 
+  Phone, 
+  Trash2, 
+  Users as UsersIcon, 
+  Filter,
+  Search,
+  ShieldCheck,
+  UserCheck
+} from 'lucide-react';
 import { useUsers } from '../context/UserContext';
-const Users = ({setTheme}) => {
-  const { users, deleteUser, permanentDeleteUser } = useUsers();
 
-  const [name, setName] =  useState('');
-  const [email, setEmail] = useState('');
-  const [role, setRole] =  useState('');
-  const [loading, setLoading] = useState(false);
+const Users = ({ setTheme }) => {
+  const { users, deleteUser } = useUsers();
 
-  // Close Outside
-  const popupRef = useRef(null);
-  useEffect (() => {
-    const closeModalDarkmode = (event) => {
-      if (popupRef.current && !popupRef.current.contains(event.target)){
-        setOpen(false);
+  const [openSelect, setOpenSelect] = useState(false);
+  const [filterRole, setFilterRole] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Close Filter Dropdown on Outside Click
+  const dropdownRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenSelect(false);
       }
     };
-    document.addEventListener('mousedown', closeModalDarkmode);
-    return () => {
-      document.removeEventListener('mousedown', closeModalDarkmode);
-    };
-   },[]);
-  
-  // darkmode toggle
-  const [open, setOpen] = useState(false);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-  
-  // Filter Select Dropdown
-  const [openSelect, setOpenSelect] = useState(false);
-  const [filterRole, setFilterRole] = useState('user');
+  // Filter & Search Logic
+  const filteredUsers = users.filter((user) => {
+    const matchesRole = filterRole === 'All' ? true : user.role?.toLowerCase() === filterRole.toLowerCase();
+    const matchesSearch = 
+      user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.address?.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesRole && matchesSearch;
+  });
 
-
-
-  // EDIT
-  const [edit, setEdited] = useState(null);
-  const handleEdit = (user) => {
-  setName(user.name);
-  setEmail(user.email);
-  setRole(user.role);
-  setEdited(user.id);
-  }
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   // validation
-  //   if (!name || !email || !role) {
-  //     alert('Name email and role  are required');
-  //     return; 
-  //   }
-
-  //   setLoading(true);
-
-  //   try {
-  //     const url  = edit 
-  //     ? `http://localhost:3000/api/users/${edit}`
-  //     : `http://localhost:3000/api/users`;  
-
-  //     const method  = edit ? 'PUT' : 'POST';
-  //     const response = await fetch(url, {
-  //       method,
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({ name, email, role }),
-  //     });
-  //     const data = await response.json();
-  //     if (!response.ok) {
-  //     alert(data.error);
-  //     return;
-  //      }
-  //     alert('User added successfully!');
-     
-  //     console.log(data);
-  //     // clear inputs
-  //     setName('');
-  //     setEmail('');
-  //     setRole('');
-  //     setEdited(null);
-  //     // get users no refresh
-  //     fetchUsers();
-  //   } catch (error) {
-  //     console.error('Error adding user:', error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
+  // Role Badge Color Helper
+  const getRoleBadgeStyle = (role) => {
+    switch (role?.toLowerCase()) {
+      case 'admin':
+        return 'bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-500/10 dark:text-violet-400 dark:border-violet-500/20';
+      case 'staff':
+        return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20';
+      case 'utility':
+        return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20';
+      default:
+        return 'bg-stone-100 text-stone-700 border-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:border-stone-700';
+    }
+  };
 
   return (
-    <>
-    {/* <form onSubmit={handleSubmit}> 
-      <input type="text" placeholder='Name' value={name} onChange={(e) => setName(e.target.value)} /> 
-   
-      <select value={role} onChange={(e) => setRole(e.target.value)}> 
-      <option value="">Select Role</option> 
-      <option value="staff">Staff</option> 
-      <option value="utility">Utility</option> 
-      <option value="admin">Admin</option> 
-      </select> 
-      <button disabled={loading} type='submit'> {loading ? 'Adding...' : edit ? 'Update' : 'Add User'} </button>\ 
-      </form> 
-      <h1>USER LIST TOTAL: {users.length}</h1> 
-      <thead> <tr> <th>ID</th> <th>Name</th> <th>Email</th> <th>Role</th> </tr> </thead> 
-      <tbody> {users.map((user) =>( <tr key={user.id}> <td>{user.id}</td> <td>{user.name}</td> <td>{user.email}</td> <td>{user.role}</td> <td> <button onClick={() => handleEdit(user)}>EDIT</button></td> <td><button onClick={() => handleDelete(user.id)}>Delete</button></td> </tr> ))}
-      </tbody> */}
-
-        <div className='min-h-screen bg-white dark:bg-[#0C1221] transition duration-300 flex justify-center'>
-        <div className='shadow-sm bg-white dark:bg-[#121A2B] transition-colors duration-500 rounded-xl w-full flex flex-col gap-5 p-2'>
-        {/* <div className='flex'>
-         <div className=' flex gap-2 w-full'>
-          <div className='h-4 w-4 bg-red-600 rounded-full'></div>
-          <div className='h-4 w-4 bg-yellow-200 rounded-full'></div>
-          <div className='h-4 w-4 bg-green-600 rounded-full'></div>
-         </div>
+    <div className="w-full bg-stone-50/50 dark:bg-[#0C1221] p-6 transition-colors duration-300 font-sans">
+      <div className="space-y-6">
         
-        <div className='p-2 relative '>
-         <button onClick={() =>setOpen(!open)} className='cursor-pointer transition duration-500 hover:bg-blue-100/50 w-10 h-10 flex items-center justify-center rounded-xl dark:text-white'><Sun strokeWidth={1}/></button>
-         {open && (
-          <div ref={popupRef} className='shadow-lg dark:bg-[#0C1221] border-white/10 border right-0 rounded-xl w-44 transition duration-300 bg-white p-2  absolute'>
-           <button onClick={() => {setTheme('light'); localStorage.setItem('theme', 'light'); setOpen(false)}}className='flex gap-2 hover:bg-blue-100/60 py-2 hover:text-blue-500 dark:text-white dark:hover:bg-white/5 rounded-xl px-1 w-full'><Sun strokeWidth={1}/>Light</button>
-           <button onClick={() => {setTheme('dark'); localStorage.setItem('theme', 'dark'); setOpen(false)}} className='flex gap-2  hover:bg-blue-100/60 w-full hover:text-blue-500 dark:hover:bg-white/5 dark:text-white py-2 px-1 rounded-xl'><Moon strokeWidth={1}/>Dark</button>
+        {/* Top Control Bar (Search & Filter) */}
+        <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-white dark:bg-[#121A2B] p-4 rounded-2xl border border-stone-200/80 dark:border-white/5 shadow-sm">
+          
+          {/* Search Input */}
+          <div className="relative w-full sm:w-80">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
+            <input
+              type="text"
+              placeholder="Search by name, email, or address..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-stone-50 dark:bg-[#151C2D] border border-stone-200 dark:border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-stone-800 dark:text-white placeholder-stone-400 focus:outline-none focus:border-violet-500 transition-all"
+            />
           </div>
-         )}
-         </div>
-        </div> */}
 
-         {/* <div className='flex justify-between '>
-          <div className='flex items-center gap-2'>
-            <div className='bg-blue-100 dark:bg-violet-500/5 dark:text-white rounded-2xl w-10 h-10 flex items-center justify-center '><Database size={20} strokeWidth={1}/></div><h1 className='text-xl dark:text-white font-semibold'></h1>
-          </div>
-
-            
-         </div> */}
-
-         <div className='flex relative justify-end '>
-          <button onClick={() => setOpenSelect(!openSelect)} className='border flex capitalize gap-1 py-1 px-4 border-neutral-200 dark:border-white/5 dark:bg-[#151C2D] dark:text-white/50  rounded-sm'>
-           {filterRole === 'All' ?  'All' : filterRole}
-           <span><ChevronUp className={` transition-transform duration-300 ${openSelect ? ' rotate-180' : 'rotate-0'}`} strokeWidth={1}/></span> 
-          </button>
-
-          {openSelect && (
-          <div  className='absolute flex flex-col gap-2 rounded-lg w-44 right-0 mt-10 bg-white dark:bg-[#0C1221] dark:text-white shadow p-3'>
-           <span className= {`py-2 px-2 rounded-xl cursor-pointer ${filterRole === 'All' ? 'bg-blue-100 text-blue-500 dark:bg-white/10' : 'hover:bg-blue-100/60 dark:hover:bg-blue-100/10 hover:text-blue-500'}`} onClick={() => {setFilterRole('All'); setOpenSelect(false)}}>All</span>
-           <span className= {`py-2 px-2 rounded-xl cursor-pointer ${filterRole === 'staff' ? 'bg-blue-100 text-blue-500 dark:bg-white/10' : 'hover:bg-blue-100/60 dark:hover:bg-blue-100/10 hover:text-blue-500'}`} onClick={() => {setFilterRole('staff'); setOpenSelect(false)}}>Staff</span>
-           <span className='hover:bg-blue-100/60 py-2 px-2 rounded-xl hover:text-blue-500 dark:hover:bg-blue-100/10' onClick={()=> {setFilterRole('utility'); setOpenSelect(false)}}>Utility</span>
-           <span className='hover:bg-blue-100/60 py-2 px-2 rounded-xl hover:text-blue-500 dark:hover:bg-blue-100/10' onClick={() => {setFilterRole('admin'); setOpenSelect(false)}}>Admin</span>
-          </div>
-          )}
-         </div>
-      
-       <div className='flex items-center bg-gray-50 dark:bg-[#151C2D] border overflow-hidden rounded-xl  border-gray-200 dark:border-white/10 transition duration-300'>
-       <aside className='flex gap-10 p-2  border-r-2 border-gray-200 dark:border-white/20 flex-col'>
-       <span className='bg-gray-300 dark:bg-gray-800  shadow-sm w-3 h-3 rounded-full'></span>
-       <span className='bg-gray-300 dark:bg-gray-800 w-3 h-3 shadow-sm rounded-full'></span>
-       <span className='bg-gray-300 dark:bg-gray-800 w-3 h-3 rounded-full'></span>
-       <span className='bg-gray-300 dark:bg-gray-800  w-3 h-3 rounded-full'></span>
-       <span className='bg-gray-300 dark:bg-gray-800  w-3 h-3 rounded-full'></span>
-       </aside>  
-       
-      <table className="w-full border-collapse">
-        
-        {/* HEADER */}
-        <thead>
-          <tr className="text-gray-500 border-b-2 dark:border-white/5 border-gray-300">
-            <th className="p-5 text-left">ID</th>
-            <th className="p-5 text-left">Name</th>
-            <th className="p-5 text-left">Email</th>
-            <th className="p-5 text-left">Contact</th>
-            <th className="p-5 text-center">Address</th>
-            <th className="p-5 text-left text-blue-500">Role</th>
-            <th className="p-5 text-center text-red-700">Action</th>
-          </tr>
-        </thead>
-
-        {/* BODY */}
-        <tbody>
-        {users
-        .filter((user) => {
-          if (filterRole === 'All') return true;
-          return user.role === filterRole;
-        })
-        .map((user) => (
-            <tr key={user.id} className="border-b text-nowrap transition duration-300 group border-gray-200 dark:border-white/5 hover:bg-gray-100 dark:hover:bg-white/5 dark:text-white">
-              <td className="p-5">{user.id}</td>
-              <td className="p-5">{user.name}</td>
-              <td className="p-5 flex items-center gap-2"><Mail/>{user.email}</td>
-              <td className='p-5'>
-              <div className='flex items-center gap-2'>
-                <Phone />
-                {user.contact}
+          {/* Filter Dropdown */}
+          <div className="relative w-full sm:w-auto" ref={dropdownRef}>
+            <button
+              onClick={() => setOpenSelect(!openSelect)}
+              className="w-full sm:w-auto flex items-center justify-between gap-2 px-4 py-2 bg-stone-50 dark:bg-[#151C2D] border border-stone-200 dark:border-white/10 rounded-xl text-xs font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <Filter className="w-3.5 h-3.5 text-stone-400" />
+                <span>Role: <strong className="capitalize text-stone-900 dark:text-white">{filterRole}</strong></span>
               </div>
-            </td>
-              <td className='p-5 flex items-center gap-2'>
-               <MapPinHouse/>{user.address}
-
-              </td>
-              <td className="p-5 bg-blue-50/65 group-hover:bg-blue-100 dark:group-hover:bg-blue-400/5 group-dark:bg-white/5 transition">{user.role}</td>
-              <td className='flex gap-2 justify-center' >
-             <button 
-                className=' cursor-pointer'
-                onClick={() => deleteUser(user.id)}
-                >
-                <Trash color='red' strokeWidth={1}
-                />
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${openSelect ? 'rotate-180' : ''}`} />
             </button>
-             
-              </td>
-            </tr>
-          ))}
-        </tbody>
 
-      </table>
-       </div>
-
+            {openSelect && (
+              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#121A2B] border border-stone-200 dark:border-white/10 rounded-xl shadow-xl p-1 z-30 animate-in fade-in zoom-in-95 duration-150 space-y-0.5">
+                {['All', 'staff', 'utility', 'admin'].map((roleItem) => (
+                  <button
+                    key={roleItem}
+                    onClick={() => {
+                      setFilterRole(roleItem);
+                      setOpenSelect(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-xs capitalize transition-colors flex items-center justify-between ${
+                      filterRole.toLowerCase() === roleItem.toLowerCase()
+                        ? 'bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-400 font-semibold'
+                        : 'text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-white/5'
+                    }`}
+                  >
+                    <span>{roleItem}</span>
+                    {filterRole.toLowerCase() === roleItem.toLowerCase() && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-violet-600" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </>
-  )
-}
 
-export default Users
+        {/* Main Users Table Container */}
+        <div className="bg-white dark:bg-[#121A2B] border border-stone-200/80 dark:border-white/5 rounded-2xl shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              
+              {/* Header */}
+              <thead>
+                <tr className="border-b border-stone-200/80 dark:border-white/5 bg-stone-50/50 dark:bg-[#151C2D]/50 text-[11px] font-semibold text-stone-400 dark:text-stone-400 uppercase tracking-wider">
+                  <th className="py-4 px-6">ID</th>
+                  <th className="py-4 px-6">User Name</th>
+                  <th className="py-4 px-6">Contact Info</th>
+                  <th className="py-4 px-6">Location</th>
+                  <th className="py-4 px-6">Role</th>
+                  <th className="py-4 px-6 text-center">Action</th>
+                </tr>
+              </thead>
+
+              {/* Body */}
+              <tbody className="divide-y divide-stone-200/60 dark:divide-white/5 text-xs text-stone-700 dark:text-stone-300">
+                {filteredUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-12 text-center text-stone-400">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <UsersIcon className="w-8 h-8 stroke-1 text-stone-300 dark:text-stone-600" />
+                        <p>No users found matching your filter criteria.</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredUsers.map((user) => (
+                    <tr 
+                      key={user.id} 
+                      className="hover:bg-stone-50/80 dark:hover:bg-white/[0.02] transition-colors group"
+                    >
+                      {/* ID */}
+                      <td className="py-4 px-6 font-mono text-[11px] text-stone-400">
+                        #{user.id}
+                      </td>
+
+                    {/* Name & Avatar */}
+                    <td className="py-4 px-6 font-medium text-stone-900 dark:text-white">
+                      <div className="flex items-center gap-3">
+                        {/* BUMABASA NG PICTURE URL O INITIALS FALLBACK */}
+                        {user.picture || user.avatar ? (
+                          <img
+                            src={user.picture || user.avatar}
+                            alt={user.name}
+                            referrerPolicy="no-referrer"
+                            className="w-8 h-8 rounded-full object-cover ring-2 ring-stone-200 dark:ring-white/10 flex-shrink-0"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.nextSibling.style.display = 'flex';
+                            }}
+                          />
+                        ) : null}
+
+
+                        <div 
+                          className={`w-8 h-8 rounded-full bg-stone-800 text-white font-semibold text-[11px] flex items-center justify-center flex-shrink-0 ${
+                            user.picture || user.avatar ? 'hidden' : 'flex'
+                          }`}
+                        >
+                          {user.name ? user.name.split(" ").map(n => n[0]).join("").toUpperCase() : 'U'}
+                        </div>
+
+                        <span className="truncate max-w-[160px]">{user.name}</span>
+                      </div>
+                    </td>
+
+                      {/* Email & Phone */}
+                      <td className="py-4 px-6 space-y-1">
+                        <div className="flex items-center gap-1.5 text-stone-600 dark:text-stone-300">
+                          <Mail className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
+                          <span className="truncate max-w-[180px]">{user.email || 'N/A'}</span>
+                        </div>
+                        {user.contact && (
+                          <div className="flex items-center gap-1.5 text-stone-400 text-[11px]">
+                            <Phone className="w-3 h-3 text-stone-400 flex-shrink-0" />
+                            <span>{user.contact}</span>
+                          </div>
+                        )}
+                      </td>
+
+                      {/* Address */}
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-1.5 text-stone-500 dark:text-stone-400">
+                          <MapPin className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
+                          <span className="truncate max-w-[200px]">{user.address || 'Not specified'}</span>
+                        </div>
+                      </td>
+
+                      {/* Role Badge */}
+                      <td className="py-4 px-6">
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider border ${getRoleBadgeStyle(user.role)}`}>
+                          {user.role || 'User'}
+                        </span>
+                      </td>
+
+                      {/* Action */}
+                      <td className="py-4 px-6 text-center">
+                        <button 
+                          onClick={() => deleteUser(user.id)}
+                          className="p-2 text-stone-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer inline-flex items-center justify-center"
+                          title="Delete User"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
+export default Users;

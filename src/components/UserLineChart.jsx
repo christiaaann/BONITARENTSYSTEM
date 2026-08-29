@@ -12,44 +12,44 @@ import {
 const UserLineChart = () => {
   const [data, setData] = useState([]);
 
-  // useEffect(() => {
-  //   fetch("http://localhost:3000/api/users/analytics/growth")
-  //     .then(res => res.json())
-  //     .then(result => {
-  //       const formatted = result.map(item => ({
-  //         ...item,
-  //         date: new Date(item.date).toLocaleDateString("en-US", {
-  //           month: "short",
-  //           day: "numeric"
-  //         })
-  //       }));
+  useEffect(() => {
+    fetch("http://localhost:3000/api/users/analytics/growth")
+      .then(res => res.json())
+      .then(result => {
+        const formatted = result.map(item => ({
+          ...item,
+          date: new Date(item.date).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric"
+          })
+        }));
 
-  //       setData(formatted);
-  //     });
-  // }, []);
+        setData(formatted);
+      });
+  }, []);
    
   // for testing users
-  useEffect(() => {
-  const testData = [
-    { date: "Jan 1", users: 10 },
-    { date: "Jan 2", users: 20 },
-    { date: "Jan 3", users: 15 },
-    { date: "Jan 4", users: 3000 },
-    { date: "Jan 5", users: 25 },
-    { date: "Jan 6", users: 5000 },
-    { date: "Jan 7", users: 35 },
-     { date: "Feb 7", users: 1000 },
-  ];
+//   useEffect(() => {
+//   const testData = [
+//     { date: "Jan 1", users: 10 },
+//     { date: "Jan 2", users: 20 },
+//     { date: "Jan 3", users: 15 },
+//     { date: "Jan 4", users: 3000 },
+//     { date: "Jan 5", users: 25 },
+//     { date: "Jan 6", users: 5000 },
+//     { date: "Jan 7", users: 35 },
+//      { date: "Feb 7", users: 1000 },
+//   ];
 
-  setData(testData);
-}, []);
+//   setData(testData);
+// }, []);
 
   return (
 <div className="mt-5 w-1/2 rounded-2xl border border-blue-400/20 bg-white/60 dark:bg-blue-400/5 backdrop-blur-xl shadow-sm transition-all duration-300 p-6">
   
   <div className="flex items-center justify-between mb-4">
     <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
-      User Growth
+      User & Clients
     </h2>
 
     <span className="text-xs px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 dark:text-blue-300">
