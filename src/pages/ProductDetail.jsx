@@ -135,9 +135,9 @@ const ProductDetail = () => {
       <div className='min-h-screen bg-stone-50/40 flex flex-col md:flex-row gap-10 p-2 max-w-6xl mx-auto items-start selection:bg-amber-900/10'>
          
          {/* Left Side: Product Image Card */}
-         <div className='w-full md:w-1/2 flex items-center justify-center  sticky top-8 group transition-all duration-500'>
+         <div className='w-full md:w-1/2 flex items-center justify-center sticky top-8 group transition-all duration-500'>
             <img
-               className='h-150 transition-transform duration-700 ease-out group-hover:scale-[1.02]' 
+               className='md:h-150 h-96 object-contain transition-transform duration-700 ease-out group-hover:scale-[1.02]' 
                src={product.image} 
                alt={product.name} 
             />
