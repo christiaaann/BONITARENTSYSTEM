@@ -19,7 +19,7 @@ const LoginSuccess = () => {
         setTimeout(() => {
           setLoading(false);
 
-          if (data.role === "admin") {
+          if (data?.role === "admin") {
             navigate("/admin");
           } else {
             navigate("/");
