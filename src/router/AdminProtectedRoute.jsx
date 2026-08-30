@@ -16,7 +16,7 @@ const AdminProtectedRoute = () => {
   }
 
   // Naka-login pero hindi admin
-  if (user.role !== "admin") {
+  if (user?.role !== "admin") {
     return <Navigate to="/" replace />;
   }
 

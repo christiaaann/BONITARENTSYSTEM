@@ -104,7 +104,7 @@ const toggleWishlist = async (productId) => {
   // Auth States Checking
   useEffect(() => {
     if (user) {
-      if (user.role === "admin") {
+      if (user?.role === "admin") {
         navigate("/admin");
         return;
       }

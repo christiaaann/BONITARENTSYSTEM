@@ -34,11 +34,12 @@ const Users = ({ setTheme }) => {
 
   // Filter & Search Logic
   const filteredUsers = users.filter((user) => {
-    const matchesRole = filterRole === 'All' ? true : user.role?.toLowerCase() === filterRole.toLowerCase();
+    const matchesRole = filterRole === 'All' ? true : user?.role?.toLowerCase() === filterRole.toLowerCase();
+  
     const matchesSearch = 
-      user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.address?.toLowerCase().includes(searchTerm.toLowerCase());
+      user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user?.address?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesRole && matchesSearch;
   });
 
@@ -208,7 +209,7 @@ const Users = ({ setTheme }) => {
                       {/* Role Badge */}
                       <td className="py-4 px-6">
                         <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider border ${getRoleBadgeStyle(user.role)}`}>
-                          {user.role || 'User'}
+                          {user?.role || 'User'}
                         </span>
                       </td>
 

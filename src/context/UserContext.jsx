@@ -25,7 +25,7 @@ const [alertpermantdelete, setAlertPermanentDelete] = useState({
       setUsers(data);
 
     //admin filter
-      const onlyAdmins = data.filter(user => user.role === 'admin');
+      const onlyAdmins = data.filter(user => user?.role === 'admin');
       setAdmins(onlyAdmins);
       
                

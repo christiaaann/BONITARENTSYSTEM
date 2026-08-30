@@ -172,7 +172,7 @@ const ProductDetail = () => {
             </div>
 
             {/* Pricing Area */}
-            <div className='bg-stone-50/60 p-4 rounded-xl border border-stone-100/80 backdrop-blur-sm'>
+            <div className='bg-stone-50/60  p-4 rounded-xl border border-stone-100/80 backdrop-blur-sm'>
              <div className='flex gap-2 items-baseline'>
                <span className='text-stone-900 font-semibold  text-3xl tracking-tight transition-all duration-300'>
                   ₱{calculateTotalPrice().toLocaleString()}
