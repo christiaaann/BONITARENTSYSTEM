@@ -15,7 +15,7 @@ const ProductDetail = () => {
    const [agreeTerms, setAgreeTerms] = useState(false);
 
    useEffect(() => {
-      fetch(`http://localhost:3000/api/apparel/${id}`)
+      fetch(`${import.meta.env.VITE_API_URL}/api/apparel/${id}`)
          .then(res => res.json())
          .then(data => {
             setProduct(data);

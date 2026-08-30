@@ -6,7 +6,7 @@ const LoginSuccess = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/me", {
+    fetch(`${import.meta.env.VITE_API_URL}/api/me`, {
       credentials: "include", 
     })
       .then(res => {
