@@ -9,7 +9,7 @@ const CategoryRadio = ({ categories, selected, fetchCategories, handleSelect, ha
    const confirmDelete = confirm('Are you sure you want to Delete?');
    if(!confirmDelete) return;
   try {
-    const res = await fetch(`http://localhost:3000/api/categories/${id}/delete`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/categories/${id}/delete`, {
       method: 'DELETE'
     });
 

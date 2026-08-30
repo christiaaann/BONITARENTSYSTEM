@@ -47,7 +47,7 @@ const Inventory = () => {
   // =======================================================
   const generateItemCode = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/apparel/generate-code')
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/apparel/generate-code`)
       const data = await res.json()
 
       setForm(prev => ({
@@ -121,7 +121,7 @@ const Inventory = () => {
     try {
       if (editId) {
         const res = await axios.put(
-          `http://localhost:3000/api/apparel/${editId}/edit`,
+          `${import.meta.env.VITE_API_URL}/api/apparel/${editId}/edit`,
           formData
         )
 
@@ -129,7 +129,7 @@ const Inventory = () => {
         alert("Product updated successfully!")
       } else {
         const res = await axios.post(
-          "http://localhost:3000/api/apparel",
+          `${import.meta.env.VITE_API_URL}/api/apparel`,
           formData
         )
 
@@ -206,7 +206,7 @@ const Inventory = () => {
 
     // Fetch full product details para makuha ang variants table rows
     try {
-      const res = await fetch(`http://localhost:3000/api/apparel/${item.id}`)
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/apparel/${item.id}`)
       const fullData = await res.json()
 
       if (fullData.variants && fullData.variants.length > 0) {
@@ -227,7 +227,7 @@ const Inventory = () => {
     if (!categoryName) return alert("Enter category name")
 
     try {
-      await axios.post("http://localhost:3000/api/categories", {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/categories`, {
         name: categoryName,
       })
 
@@ -243,7 +243,7 @@ const Inventory = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/categories")
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/categories`)
       const data = await res.json()
       setCategories(data)
     } catch (err) {
@@ -285,7 +285,7 @@ const Inventory = () => {
       const formData = new FormData()
       formData.append("image", fileToSend)
 
-      const res = await axios.post("http://localhost:3000/api/removebg", formData)
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/removebg`, formData)
 
       const base64Url = res.data.image
       setPreviewImage(base64Url)
@@ -307,7 +307,7 @@ const Inventory = () => {
     if (!confirmDelete) return
 
     try {
-      await fetch(`http://localhost:3000/api/apparel/${id}/delete`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/apparel/${id}/delete`, {
         method: 'DELETE'
       })
 
@@ -323,7 +323,7 @@ const Inventory = () => {
   useEffect(() => {
     const fetchUsage = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/removebg/usage")
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/removebg/usage`)
         const data = await res.json()
         setUsage(data)
       } catch (err) {

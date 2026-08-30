@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
   const fetchUsers = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/users');
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users`);
       const data = await res.json();
       setUsers(data);
     } catch (error) {
@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
 useEffect (() => {
   const fetchItems = async () => {
   try {
-  const res = await fetch ('http://localhost:3000/api/apparel');
+  const res = await fetch (`${import.meta.env.VITE_API_URL}/api/apparel`);
   const data = await res.json();
   setItems(data);
   }catch (error) {
@@ -43,7 +43,7 @@ useEffect (() => {
   //======================================================================== 
   // fetch user (AUTO via cookie)
   useEffect(() => {
-    fetch("http://localhost:3000/api/me", {
+    fetch(`${import.meta.env.VITE_API_URL}/api/me`, {
       credentials: "include",
     })
       .then(res => {
@@ -70,7 +70,7 @@ const closeGoogleModal = () => {
   // logout
   const logout = async () => {
     setUser(null);
-    await fetch("http://localhost:3000/auth/logout", {
+    await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
       method: "POST",
       credentials: "include",
     });

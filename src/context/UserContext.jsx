@@ -20,7 +20,7 @@ const [alertpermantdelete, setAlertPermanentDelete] = useState({
 // fetchusers
   const fetchUsers = async () => {
     try{
-      const res = await fetch('http://localhost:3000/api/users');
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users`);
       const data = await res.json();
       setUsers(data);
 
@@ -37,7 +37,7 @@ const [alertpermantdelete, setAlertPermanentDelete] = useState({
 
     const fetchTrashUsers = async () => {
     try{
-    const res = await fetch('http://localhost:3000/api/users/trash');
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/trash`);
     const data = await res.json();
     setTrashUsers(data);
     }catch{
@@ -52,7 +52,7 @@ const [alertpermantdelete, setAlertPermanentDelete] = useState({
     const confirmDelte = confirm('Are you sure you want to Delete?');
     if (!confirmDelte) return;
     try{
-      await fetch(`http://localhost:3000/api/users/${id}/soft-delete`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/users/${id}/soft-delete`, {
       method: 'PATCH',
       });
       alert('User Deleted');
@@ -68,7 +68,7 @@ const [alertpermantdelete, setAlertPermanentDelete] = useState({
     const confirmDelte = confirm('Restore user?');
     if (!confirmDelte) return; 
    try{
-   await fetch(`http://localhost:3000/api/users/${id}/restore`, {
+   await fetch(`${import.meta.env.VITE_API_URL}/api/users/${id}/restore`, {
    method: 'PATCH'
    })
    alert('Restore User');
@@ -84,7 +84,7 @@ const permanentDeleteUser = async (id) => {
     const confirmDelete = confirm("Are you sure you wnat delete Permanent?");
     if (!confirmDelete) return;
     try{
-       const res = await fetch(`http://localhost:3000/api/users/${id}`, {
+       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${id}`, {
        method:"DELETE",
      });
 

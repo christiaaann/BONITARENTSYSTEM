@@ -13,7 +13,7 @@ const UserLineChart = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/users/analytics/growth")
+    fetch(`${import.meta.env.VITE_API_URL}/api/users/analytics/growt`)
       .then(res => res.json())
       .then(result => {
         const formatted = result.map(item => ({
