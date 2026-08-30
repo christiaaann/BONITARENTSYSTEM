@@ -40,14 +40,14 @@ const Dashboard = () => {
       setError(null)
 
       // Fetch users list (kung may backend API)
-      const usersRes = await fetch('http://localhost:3000/api/users').catch(() => null)
+      const usersRes = await fetch(`${import.meta.env.VITE_API_URL}/api/users`).catch(() => null)
       if (usersRes && usersRes.ok) {
         const usersData = await usersRes.json()
         setUsers(Array.isArray(usersData) ? usersData : [])
       }
 
       // Halimbawa ng fetch ng rental records
-      const rentalsRes = await fetch('http://localhost:3000/api/rentals').catch(() => null)
+      const rentalsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/rentals`).catch(() => null)
       if (rentalsRes && rentalsRes.ok) {
         const rentalsData = await rentalsRes.json()
         setRentals(Array.isArray(rentalsData) ? rentalsData : [])
