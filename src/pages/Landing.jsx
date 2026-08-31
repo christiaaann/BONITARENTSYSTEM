@@ -9,6 +9,7 @@ import { useWishlist } from '../context/WishlistContext';
 import Categories from '../components/Home/Categories';
 import FilterProductCategory from '../components/Home/FilterProductCategory';
 import SearchBar from '../components/SearchBar';
+import { authHeaders } from '../utils/authToken';
 const Landing = () => {
   const navigate = useNavigate();
   const { user, items, setItems } = useAuth();
@@ -79,7 +80,7 @@ const toggleWishlist = async (productId) => {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/complete-profile`, {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeaders() },
         body: JSON.stringify({ address, contact }),
       });
 
