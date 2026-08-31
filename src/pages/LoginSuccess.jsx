@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; // 1. I-import ang useAuth
 
 const LoginSuccess = () => {
   const navigate = useNavigate();
+  const { setUser } = useAuth(); // 2. Kunin ang setUser mula sa AuthContext
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -14,22 +16,26 @@ const LoginSuccess = () => {
         return res.json();
       })
       .then(data => {
-        // localStorage.setItem("user", JSON.stringify(data));
+   
+        setUser(data);
+
         setTimeout(() => {
           setLoading(false);
 
           if (data?.role === "admin") {
-            navigate("/admin");
+            navigate("/admin", { replace: true });
           } else {
-            navigate("/");
+            navigate("/", { replace: true });
           }
-        }, 1000);
+        }, 500);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("LoginSuccess error:", err);
         setLoading(false);
-        navigate("/");
+        setUser(null);
+        navigate("/", { replace: true });
       });
-  }, [navigate]);
+  }, [navigate, setUser]);
 
   return (
     <div className="flex items-center justify-center h-screen">
