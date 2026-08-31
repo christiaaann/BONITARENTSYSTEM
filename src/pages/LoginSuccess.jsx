@@ -1,15 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 
 const LoginSuccess = () => {
   const navigate = useNavigate();
-  const { refreshUser } = useAuth();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    refreshUser()
+    fetch(`${import.meta.env.VITE_API_URL}/api/me`, {
+      credentials: "include", 
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("Not logged in");
+        return res.json();
+      })
       .then(data => {
+        // localStorage.setItem("user", JSON.stringify(data));
         setTimeout(() => {
           setLoading(false);
 
@@ -24,7 +29,7 @@ const LoginSuccess = () => {
         setLoading(false);
         navigate("/");
       });
-  }, [navigate, refreshUser]);
+  }, [navigate]);
 
   return (
     <div className="flex items-center justify-center h-screen">

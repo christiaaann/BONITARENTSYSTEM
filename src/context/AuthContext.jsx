@@ -1,9 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import {
-  authHeaders,
-  clearAuthToken,
-  saveOAuthTokenFromLocation,
-} from "../utils/authToken";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
@@ -15,38 +10,33 @@ export const AuthProvider = ({ children }) => {
   const [showLogoutConfirm, setLogoutConfirm] = useState(false);
   const [showGoogleModal, setShowGoogleModal] = useState(false);
 
-  // Fetch the account using a bearer token when cookies are blocked (Safari
-  // blocks third-party cookies), while keeping cookie login working on desktop.
-  const refreshUser = useCallback(async () => {
+  // Fetch logged-in user
+  useEffect(() => {
+    const fetchUser = async () => {
       try {
         const res = await fetch(
           `${import.meta.env.VITE_API_URL}/api/me`,
           {
             credentials: "include",
-            headers: authHeaders(),
           }
         );
 
         if (!res.ok) {
           setUser(null);
-          return null;
+          return;
         }
 
         const data = await res.json();
         setUser(data);
-        return data;
 
       } catch (error) {
         console.error("Error fetching user:", error);
         setUser(null);
-        return null;
       }
-  }, []);
+    };
 
-  useEffect(() => {
-    saveOAuthTokenFromLocation();
-    refreshUser();
-  }, [refreshUser]);
+    fetchUser();
+  }, []);
 
   // Google modal
   const openGoogleModal = () => {
@@ -65,13 +55,11 @@ export const AuthProvider = ({ children }) => {
         {
           method: "POST",
           credentials: "include",
-          headers: authHeaders(),
         }
       );
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
-      clearAuthToken();
       setUser(null);
       window.location.href = "/";
     }
@@ -82,7 +70,6 @@ export const AuthProvider = ({ children }) => {
       value={{
         user,
         setUser,
-        refreshUser,
         logout,
 
         showLogoutConfirm,
